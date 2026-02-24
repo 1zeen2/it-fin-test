@@ -24,6 +24,7 @@ public class UserController {
 	 *	POST
 	 *	/api/users/signUp
 	 */
+	@PostMapping("/signUp")
 	public ResponseEntity<String> signUpUser(@RequestBody UserSignUpDto signUpDto) {
 		
 		User user = User.builder()

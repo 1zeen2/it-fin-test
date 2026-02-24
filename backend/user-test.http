@@ -1,0 +1,17 @@
+### 회원 가입 API 테스트
+POST http://localhost:8080/api/users/signUp
+Content-Type: application/json
+
+{
+
+  "email": "asd@naver.com",
+  "name": "Tester",
+  "loginId": "TesterID",
+  "phone": "010-0000-0000",
+  "address": "Seoul",
+  "detailAddress": "1호",
+  "isTermsAgreed": true,
+  "isPrivacyAgreed": true,
+  "isMarketingAgreed": false
+
+}
