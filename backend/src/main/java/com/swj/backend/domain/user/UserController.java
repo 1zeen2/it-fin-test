@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.swj.backend.domain.user.dto.UserSignInDto;
 import com.swj.backend.domain.user.dto.UserSignUpDto;
 
 import lombok.RequiredArgsConstructor;
@@ -27,18 +28,7 @@ public class UserController {
 	@PostMapping("/signUp")
 	public ResponseEntity<String> signUpUser(@RequestBody UserSignUpDto signUpDto) {
 		
-		User user = User.builder()
-				.email(signUpDto.getEmail())
-				.name(signUpDto.getName())
-				.loginId(signUpDto.getLoginId())
-				.pwd(signUpDto.getPwd())
-				.phone(signUpDto.getPhone())
-				.address(signUpDto.getAddress())
-				.detailAddress(signUpDto.getDetailAddress())
-				.isTermsAgreed(signUpDto.getIsTermsAgreed())
-				.isPrivacyAgreed(signUpDto.getIsPrivacyAgreed())
-				.isMarketingAgreed(signUpDto.getIsMarketingAgreed())
-				.build();
+		User user = signUpDto.toEntity();
 		
 		Long saveUserId = userService.signUp(user);
 		
@@ -50,9 +40,15 @@ public class UserController {
 	 * 	로그인 테스트 API ( JWT 추가 이후 수정해야 함)
 	 */
 	@PostMapping("/signIn")
-	public ResponseEntity<String> signInTest() {
-		
-		return ResponseEntity.ok("로그인 API 호출 성공 (JWT 구현 전 버전)");
+	public ResponseEntity<String> signInTest(@RequestBody UserSignInDto signInDto) {
+		try {
+			Long userId = userService.signIn(signInDto);
+			
+			return ResponseEntity.ok("로그인 성공. 유저 ID: " + userId);
+		} catch (IllegalArgumentException e) {
+			
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+		}
 	}
 	
 }

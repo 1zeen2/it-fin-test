@@ -26,7 +26,7 @@ public class User {
     private String loginId;
 
     @Column(length = 100)
-    private String pwd; // DB 컬럼명 pwd와 일치시킴
+    private String pwd;
 
     @Column(nullable = false, length = 15)
     private String phone;
@@ -56,7 +56,7 @@ public class User {
     @Column(nullable = false, length = 20)
     private Role role;
 
-    private LocalDateTime lastLoggedIn; // 신규 추가된 컬럼
+    private LocalDateTime lastLoggedIn;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -66,9 +66,21 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Builder
-    public User(String email, String name, String loginId, String pwd, String phone, 
-                String address, String detailAddress, Boolean isTermsAgreed, Boolean isPrivacyAgreed, 
-                Boolean isMarketingAgreed, String provider, String providerId, Role role) {
+    public User(
+    		String email,
+			String name,
+			String loginId,
+			String pwd,
+			String phone, 
+            String address,
+            String detailAddress,
+            Boolean isTermsAgreed,
+            Boolean isPrivacyAgreed, 
+            Boolean isMarketingAgreed,
+            String provider,
+            String providerId,
+            Role role
+        ) {
         this.email = email;
         this.name = name;
         this.loginId = loginId;

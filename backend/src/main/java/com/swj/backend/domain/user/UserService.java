@@ -6,6 +6,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.swj.backend.domain.user.dto.UserSignInDto;
+
 
 @Service
 @RequiredArgsConstructor
@@ -37,4 +39,16 @@ public class UserService {
 			throw new IllegalStateException("이미 존재하는 아이디 입니다.");
 		}
 	}
+	
+	public Long signIn(UserSignInDto signInDto) {
+		User user = userRepository.findByLoginId(signInDto.getLoginId())
+				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 입니다."));
+		
+		if (!passwordEncoder.matches(signInDto.getPwd(), user.getPwd())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
+		
+		return user.getId();
+	}
+	
 }

@@ -1,17 +1,29 @@
 ### 회원 가입 API 테스트
-POST http://localhost:8080/api/users/signUp
+# POST http://localhost:8080/api/users/signUp
+# Content-Type: application/json
+
+# {
+
+#   "email": "asd2@naver.com",
+#   "pwd": "123",
+#   "name": "Tester2",
+#   "loginId": "TesterID2",
+#   "phone": "010-0000-0000",
+#   "address": "Seoul",
+#   "detailAddress": "2호",
+#   "isTermsAgreed": true,
+#   "isPrivacyAgreed": true,
+#   "isMarketingAgreed": false
+
+# }
+
+### 로그인 API 테스트
+POST http://localhost:8080/api/users/signIn
 Content-Type: application/json
 
 {
 
-  "email": "asd@naver.com",
-  "name": "Tester",
-  "loginId": "TesterID",
-  "phone": "010-0000-0000",
-  "address": "Seoul",
-  "detailAddress": "1호",
-  "isTermsAgreed": true,
-  "isPrivacyAgreed": true,
-  "isMarketingAgreed": false
+  "loginId": "TesterID2",
+  "pwd": "123"
 
 }
