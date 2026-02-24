@@ -50,6 +50,7 @@ public class UserController {
 	 */
 	@PostMapping("/signIn")
 	public ResponseEntity<String> signInTest() {
+		
 		return ResponseEntity.ok("로그인 API 호출 성공 (JWT 구현 전 버전)");
 	}
 	
