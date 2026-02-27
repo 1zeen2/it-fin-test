@@ -1,5 +1,8 @@
 package com.swj.backend.domain.user;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,11 +43,17 @@ public class UserController {
 	 * 	로그인 테스트 API ( JWT 추가 이후 수정해야 함)
 	 */
 	@PostMapping("/signIn")
-	public ResponseEntity<String> signInTest(@RequestBody UserSignInDto signInDto) {
+	public ResponseEntity<?> signIn(@RequestBody UserSignInDto signInDto) {
 		try {
-			Long userId = userService.signIn(signInDto);
+			String token = userService.signIn(signInDto);
 			
-			return ResponseEntity.ok("로그인 성공. 유저 ID: " + userId);
+			// 프론트엔드에서 파싱하기 쉽도록 백엔드에서 JSON으로 감싸써 반환
+			// 추후 TokenResponseDto로 분리 예정 (access, refresh)
+			Map<String, String> response = new HashMap<>();
+			response.put("accessToken", token);
+			response.put("message" , "로그인 성공");
+			
+			return ResponseEntity.ok(response);
 		} catch (IllegalArgumentException e) {
 			
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

@@ -19,3 +19,9 @@ spring:
       hibernate:
         "[format_sql]": true
         "[highlight_sql]": true
+
+jwt:
+  #임시패스워드키_swj_project_lafenice_2026_safe_key_secure_point
+  secret: 7J6E7Iuc7Yyo7Iqk7JuM65Oc7YKkX3N3al9wcm9qZWN0X2xhZmVuaWNlXzIwMjZfc2FmZV9rZXlfc2VjdXJlX3BvaW50
+  # 토큰 유효 시간: 1시간 (3600000 밀리초)
+  expiration-time: 3600000

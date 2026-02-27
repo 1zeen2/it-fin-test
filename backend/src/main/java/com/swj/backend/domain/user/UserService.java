@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.swj.backend.domain.user.dto.UserSignInDto;
+import com.swj.backend.global.auth.JwtProvider;
 
 
 @Service
@@ -16,6 +17,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 	
 	/** 회원 가입 로직 */
 	@Transactional
@@ -28,7 +30,6 @@ public class UserService {
 		return userRepository.save(user).getId();
 	}
 	
-	
 	/** 중복 회원 검증 로직 */
 	private void validateDuplicateUser(User user) {
 		if (userRepository.existsByEmail(user.getEmail())) {
@@ -40,7 +41,9 @@ public class UserService {
 		}
 	}
 	
-	public Long signIn(UserSignInDto signInDto) {
+	/** 로그인 아이디, 비밀번호 일치 검사 로직 */
+	@Transactional
+	public String signIn(UserSignInDto signInDto) {
 		User user = userRepository.findByLoginId(signInDto.getLoginId())
 				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 입니다."));
 		
@@ -48,7 +51,8 @@ public class UserService {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
 		
-		return user.getId();
+		return jwtProvider.createToken(user.getLoginId());
 	}
+	
 	
 }
