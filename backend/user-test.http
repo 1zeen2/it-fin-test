@@ -33,4 +33,12 @@ GET http://localhost:8080/api/users/me
 ### 3. [성공 케이스] 정당한 토큰으로 보안 구역 접근
 # 주의: 반드시 'Bearer ' (띄어쓰기 포함) 뒤에 토큰을 넣어야 합니다!
 GET http://localhost:8080/api/users/me
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3NzIxODQxMjUsImV4cCI6MTc3MjE4NzcyNX0.2eEynx9KyloWZURA_WHGGas9fXu4u9_KONknHp3TsOF5DE1k_8iZE1G9sylT9pRIJecYIVjS99oP44ZJxm0HBweyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3NzIxODQxNDEsImV4cCI6MTc3MjE4Nzc0MX0.ctTUEmtXrQCoZNAn_XpMULDqKNQA8jzPdnf-0r02volDOQh187DLdoezRnEfM_eduCPeFNOsW2YNcAqW2elCfQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3NzIxOTQyNzgsImV4cCI6MTc3MjE5Nzg3OH0.kzVbSMwUq0Yt5anlgHYUfZnSCuOVJWXhix7gXRvQE6NiZ-z4s2dOd9G4VKP6hZ_3XnceRBKkoZxEMec5e0JaKw
+
+### 4. [토큰 재발급 테스트] 기존 Refresh Token으로 새 토큰 세트 받기
+POST http://localhost:8080/api/auth/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3NzIxOTQ3NDcsImV4cCI6MTc3MzQwNDM0N30.aCYBw3qpTD8wPupfSqnSipZ2zi6sbnEh82A_4_-nuHIvp8o-ugMrgGc13VmHPnU8goeM-tqkcyY7qlcDyesNlA"
+}

@@ -46,7 +46,7 @@ public class JwtProvider {
 	
 	/** Refresh Token 생성 */
 	public String createRefreshToken(String loginId) {
-		return buildToken(loginId, expirationTime);
+		return buildToken(loginId, refreshExpirationTime);
 	}
 	
 	/** 토큰에서 유저 아이디 추출 */

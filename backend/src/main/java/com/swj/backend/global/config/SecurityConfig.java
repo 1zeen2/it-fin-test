@@ -9,10 +9,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.swj.backend.global.auth.JwtAuthenticationFilter;
 import com.swj.backend.global.auth.JwtProvider;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -30,6 +34,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+        	.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable) // REST API는 상태를 저장하지 않아 CSRF 공격으로부터 상대적으로 안전하긴 함
             
             // JWT 사용으로 인한 기본 로그인 폼 및 HTTP Basic 인증 비활성화
@@ -41,6 +46,7 @@ public class SecurityConfig {
             
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/users/signUp", "/api/users/signIn").permitAll() // 회원 가입, 로그인은 모두 허용
+                .requestMatchers("/api/auth/reissue").permitAll()
                 .anyRequest().authenticated()) // 그 외 모든 요청은 token 필요
             
             /** 스프링의 기본 인증 필터(UsernamePasswordAuthenticationFilter)가 작동하기 전에
@@ -50,4 +56,22 @@ public class SecurityConfig {
 
         return http.build();
     }
+    
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+    	CorsConfiguration configuration = new CorsConfiguration();
+    	
+    	configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+    	configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    	configuration.setAllowedHeaders(Arrays.asList("*"));
+    	configuration.setAllowCredentials(true); // 쿠기, Authorization 헤더 등 자격 증명을 포함 (JWT 사용 시 필수)
+
+    	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    	
+    	source.registerCorsConfiguration("/**", configuration); // 모든 API 경로에 적용
+    	
+    	return source;
+    	
+    }
+    
 }
