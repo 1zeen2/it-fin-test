@@ -2,6 +2,7 @@ package com.swj.backend.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -47,6 +48,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/users/signUp", "/api/users/signIn").permitAll() // 회원 가입, 로그인은 모두 허용
                 .requestMatchers("/api/auth/reissue").permitAll()
+                
+                // QR 코드 생성과 SSE 연결은 로그인 (토큰) 없이 접근이 가능해야 로그인이 가능
+                .requestMatchers(HttpMethod.POST, "/api/auth/qr").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/auth/qr/subscribe").permitAll()
+                
                 .anyRequest().authenticated()) // 그 외 모든 요청은 token 필요
             
             /** 스프링의 기본 인증 필터(UsernamePasswordAuthenticationFilter)가 작동하기 전에

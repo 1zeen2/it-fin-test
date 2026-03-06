@@ -1,4 +1,4 @@
-package com.swj.backend.domain.auth;
+package com.swj.backend.domain.auth.domain;
 
 import java.time.LocalDateTime;
 

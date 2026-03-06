@@ -11,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.swj.backend.domain.auth.RefreshToken;
-import com.swj.backend.domain.auth.RefreshTokenRepository;
+import com.swj.backend.domain.auth.domain.RefreshToken;
+import com.swj.backend.domain.auth.repository.RefreshTokenRepository;
 import com.swj.backend.domain.user.dto.UserSignInDto;
 import com.swj.backend.global.auth.JwtProvider;
 
