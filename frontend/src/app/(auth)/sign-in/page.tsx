@@ -1,22 +1,37 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { SyntheticEvent } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/axios';
 import axios from 'axios';
 
+const TABS = [
+    { id: 'id', label: 'ID/전화번호', activeIconPos: '-54px -314px', inactiveIconPos: '-72px -314px' },
+    { id: 'ones', label: '일회용 번호', activeIconPos: '-316px -276px', inactiveIconPos: '-316px -294px' },
+    { id: 'qr', label: 'QR코드', activeIconPos: '-316px -240px', inactiveIconPos: '-18px -314px' },
+  ] as const;
+
+// 타이머 포맷팅 함수 ("mm분 ss초 형식")
+const formatTime = (seconds: number) => {
+  const mm = Math.floor(seconds / 60);
+  const ss = seconds % 60;
+  return `0${mm}분 ${ss.toString().padStart(2, '0')}초`;
+};
+
+// 컴포넌트
 export default function SignInPage() {
   const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<'id' | 'ones' | 'qr'>('id');
+  const [focusedInput, setFocusedInput] = useState<'' | 'loginId' | 'pwd' | 'ones'>('');
   
   /** id, 전화번호 입력 변수 */
   const [loginId, setLoginId] = useState('');
   const [pwd, setPwd] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [isIpSecurity, setIsIpSecurity] = useState(false);
-  const [focusedInput, setFocusedInput] = useState<'' | 'loginId' | 'pwd' | 'ones'>('');
-  const [activeTab, setActiveTab] = useState<'id' | 'ones' | 'qr'>('id');
 
   /** 일회용 번호 입력 변수 */
   const [disposableNum, setDisposableNum] = useState(''); // 일회용 번호
@@ -117,20 +132,33 @@ export default function SignInPage() {
     };
   }, [activeTab, qrRefreshKey, router]); // 재시도 클릭 시 useEffect가 다시 돌아야 함
 
-  // 타이머 포맷팅 함수 ("mm분 ss초 형식")
-  const formatTime = (seconds: number) => {
-    const mm = Math.floor(seconds / 60);
-    const ss = seconds % 60;
-    return `0${mm}분 ${ss.toString().padStart(2, '0')}초`;
-  };
-
-  const TABS = [
-    { id: 'id', label: 'ID/전화번호', activeIconPos: '-54px -314px', inactiveIconPos: '-72px -314px' },
-    { id: 'ones', label: '일회용 번호', activeIconPos: '-316px -276px', inactiveIconPos: '-316px -294px' },
-    { id: 'qr', label: 'QR코드', activeIconPos: '-316px -240px', inactiveIconPos: '-18px -314px' },
-  ] as const;
-
+  // 로그인 상태 유지 및 IP 보안 토글
   const toggleCheck = () => setIsChecked(!isChecked);
+
+  const handleSignIn = async (e: SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post('/api/users/signIn', { loginId, pwd });
+      const { accessToken, refreshToken } = response.data;
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      router.push('/');
+
+    } catch (error: unknown) {
+
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || '로그인 실패.';
+        alert(errorMessage);
+      } else {
+        alert('알 수 없는 오류가 발생했습니다.');
+      }
+
+    }
+    // isChecked, isIpaSecurity는 추후 API 페이로드에 담아 보낼 예정
+  };
 
   // 일회용 번호 로그인 폼 제출 처리 함수
   const handleDisposableSignIn = async (e: SyntheticEvent<HTMLFormElement>) => {
@@ -171,30 +199,6 @@ export default function SignInPage() {
         }
     }
 
-  };
-
-  const handleSignIn = async (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      const response = await api.post('/api/users/signIn', { loginId, pwd });
-      const { accessToken, refreshToken } = response.data;
-
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-
-      router.push('/');
-
-    } catch (error: unknown) {
-
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data || '로그인 실패.';
-        alert(errorMessage);
-      } else {
-        alert('알 수 없는 오류가 발생했습니다.');
-      }
-
-    }
   };
 
   return (
