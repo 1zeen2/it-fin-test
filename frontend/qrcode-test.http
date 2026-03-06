@@ -1,7 +1,0 @@
-### QR 로그인 모바일 인증 시뮬레이션 (REST Client)
-
-POST http://localhost:8080/api/auth/qr/verify
-Content-Type: application/x-www-form-urlencoded
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3NzI3OTM3NjUsImV4cCI6MTc3Mjc5NzM2NX0.RAFvSm9CQ63R0PkWzGkacp7QuRf1LVGYQTXs0V9jm6k7NgWe4rrjwAQOB9eGLxAQF3xKiTY7Gc-7kNXKfAvK-w
-
-sessionId=746e7864-4dc4-4d5e-acdc-2fe107790ef5&authNumber=40

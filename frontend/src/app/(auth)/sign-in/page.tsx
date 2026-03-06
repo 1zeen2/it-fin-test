@@ -132,6 +132,47 @@ export default function SignInPage() {
 
   const toggleCheck = () => setIsChecked(!isChecked);
 
+  // 일회용 번호 로그인 폼 제출 처리 함수
+  const handleDisposableSignIn = async (e: SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (disposableNum.length !== 8) {
+      alert('일회용 번호 8자리를 정확히 입력해 주세요.');
+
+      return;
+    }
+
+    /**
+     *  서버에 일회용 번호 검증 요청
+     *  백엔드 파라미터명인 ("authNumber")와 동일하게 작성
+     */
+    try {
+      const response = await api.post('/api/auth/disposable/verify', null, { params: { authNumber: disposableNum } });
+
+      const { accessToken, refreshToken } = response.data;
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      router.push('/');
+      
+    } catch (error: unknown) {
+        
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data?.message || '로그인 실패.';
+          
+          alert(errorMessage);
+          
+          setDisposableNum(''); // 실패 시 입력창 초기화
+
+        } else {
+
+          alert('알 수 없는 오류가 발생했습니다.');
+        }
+    }
+
+  };
+
   const handleSignIn = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -376,12 +417,7 @@ export default function SignInPage() {
             )}
 
             {activeTab === 'ones' && (
-              <form 
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  alert(`입력된 일회용 번호: ${disposableNum}`);
-                }}
-              >
+              <form onSubmit={handleDisposableSignIn}>
                 {/* 안내 텍스트 */}
                 <div className='mb-[16px] flex flex-col items-center justify-center text-[15px] leading-[21px] tracking-[-.6px] text-[#1e1e23]'>
   

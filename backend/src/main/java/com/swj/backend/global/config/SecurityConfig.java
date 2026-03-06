@@ -49,6 +49,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/signUp", "/api/users/signIn").permitAll() // 회원 가입, 로그인은 모두 허용
                 .requestMatchers("/api/auth/reissue").permitAll()
                 
+                // 일회용 번호 전송 및 로그인 허용
+                .requestMatchers(HttpMethod.POST, "/api/auth/disposable/verify").permitAll()
+                
                 // QR 코드 생성과 SSE 연결은 로그인 (토큰) 없이 접근이 가능해야 로그인이 가능
                 .requestMatchers(HttpMethod.POST, "/api/auth/qr").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/qr/subscribe").permitAll()
