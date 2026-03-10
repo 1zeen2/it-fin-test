@@ -2,7 +2,6 @@ package com.swj.backend.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -46,15 +45,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/signUp", "/api/users/signIn").permitAll() // 회원 가입, 로그인은 모두 허용
-                .requestMatchers("/api/auth/reissue").permitAll()
-                
-                // 일회용 번호 전송 및 로그인 허용
-                .requestMatchers(HttpMethod.POST, "/api/auth/disposable/verify").permitAll()
-                
-                // QR 코드 생성과 SSE 연결은 로그인 (토큰) 없이 접근이 가능해야 로그인이 가능
-                .requestMatchers(HttpMethod.POST, "/api/auth/qr").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/auth/qr/subscribe").permitAll()
+                .requestMatchers("/api/auth/**").permitAll() // "/api/auth/" 하위 경로는 모두 허용
                 
                 .anyRequest().authenticated()) // 그 외 모든 요청은 token 필요
             

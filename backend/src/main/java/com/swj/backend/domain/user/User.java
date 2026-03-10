@@ -16,35 +16,48 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(unique = true, length = 20)
+    private String loginId;
+    
+    @Column(length = 100)
+    private String pwd;
+    
+    @Column(unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, length = 30)
     private String name;
-
-    @Column(unique = true, length = 20)
-    private String loginId;
-
-    @Column(length = 100)
-    private String pwd;
+    
+    @Column(nullable = false, length = 8)
+    private String birth;
+    
+    @Column(nullable = false, length = 20)
+    private String telecom;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 1)
+    private Gender gender; // "M" 또는 "F"
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Nationality nationality; // "LOCAL" or "FOREIGN"
 
     @Column(nullable = false, length = 15)
     private String phone;
+    
+    /**
+     * 1페이지: 서비스 약관 동의 
+     * 	동의 또는 동의하지 않음이라는 값이 반드시 있어야 하므로 
+     * 	nullable = false
+     */
+    @Column(nullable = false) private Boolean termsAgreed;    // 필수
+    @Column(nullable = false) private Boolean realnameAgreed; // 선택
+    @Column(nullable = false) private Boolean locationAgreed; // 선택
+    @Column(nullable = false) private Boolean privacyAgreed;  // 선택
+    @Column(nullable = false) private Boolean eventAgreed;    // 선택
 
-    @Column(nullable = false, length = 150)
-    private String address;
-
-    @Column(length = 150)
-    private String detailAddress;
-
-    @Column(nullable = false)
-    private Boolean isTermsAgreed;
-
-    @Column(nullable = false)
-    private Boolean isPrivacyAgreed;
-
-    @Column(nullable = false)
-    private Boolean isMarketingAgreed;
+    // 2페이지: 본인 인증 약관 동의
+    @Column(nullable = false) private Boolean authTermsAgreed; // 필수
 
     @Column(nullable = false, length = 15)
     private String provider;
@@ -67,30 +80,32 @@ public class User {
 
     @Builder
     public User(
-    		String email,
-			String name,
-			String loginId,
-			String pwd,
-			String phone, 
-            String address,
-            String detailAddress,
-            Boolean isTermsAgreed,
-            Boolean isPrivacyAgreed, 
-            Boolean isMarketingAgreed,
-            String provider,
-            String providerId,
-            Role role
+    		String loginId, String pwd, String email,
+    		String name, String birth, String telecom, Gender gender, Nationality nationality,
+    		String phone, 
+            Boolean termsAgreed, Boolean realnameAgreed, Boolean locationAgreed,
+            Boolean privacyAgreed, Boolean eventAgreed,
+            Boolean authTermsAgreed,
+            String provider, String providerId, Role role
         ) {
-        this.email = email;
+    	this.loginId = loginId;
+    	this.pwd = pwd;
+    	this.email = email;
         this.name = name;
-        this.loginId = loginId;
-        this.pwd = pwd;
+        this.birth = birth;
+        this.telecom = telecom;
+        this.gender = gender;
+        this.nationality = nationality;
         this.phone = phone;
-        this.address = address;
-        this.detailAddress = detailAddress;
-        this.isTermsAgreed = isTermsAgreed;
-        this.isPrivacyAgreed = isPrivacyAgreed;
-        this.isMarketingAgreed = isMarketingAgreed != null ? isMarketingAgreed : false;
+        
+        // 약관 세팅 (null 방지)
+        this.termsAgreed = termsAgreed != null ? termsAgreed : false;
+        this.realnameAgreed = realnameAgreed != null ? realnameAgreed : false;
+        this.locationAgreed = locationAgreed != null ? locationAgreed : false;
+        this.privacyAgreed = privacyAgreed != null ? privacyAgreed : false;
+        this.eventAgreed = eventAgreed != null ? eventAgreed : false;
+        this.authTermsAgreed = authTermsAgreed != null ? authTermsAgreed : false;
+        
         this.provider = provider != null ? provider : "LOCAL";
         this.role = role != null ? role : Role.USER;
         this.providerId = providerId;

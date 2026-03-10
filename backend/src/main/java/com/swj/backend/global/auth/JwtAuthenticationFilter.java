@@ -21,6 +21,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 	private final JwtProvider jwtProvider;
 	
+	/** 
+	 * 로그인, 회원가입은 토큰 검사를 하지 않음. 
+	 * 	토큰 검사는 로그인 요청 이후 실행.
+	 * 	로그인 요청시 토큰 검사를 하면 access, refresh 둘 다 영원히 못 받음
+	 */
+	@Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/auth/");
+    }
+	
 	/** 클라이언트에서 요청을 보낼 때 마다 실행 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
