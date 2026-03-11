@@ -59,14 +59,16 @@ public class UserService {
 	
 	/** 로그인 아이디, 비밀번호 일치 검사 로직 */
 	@Transactional
-	public Map<String, String> signIn(UserLoginDto signInDto) {
+	public Map<String, String> login(UserLoginDto loginDto) {
 		
-		User user = userRepository.findByLoginId(signInDto.getLoginId())
+		User user = userRepository.findByLoginId(loginDto.getLoginId())
 				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 입니다."));
 		
-		if (!passwordEncoder.matches(signInDto.getPwd(), user.getPwd())) {
+		if (!passwordEncoder.matches(loginDto.getPwd(), user.getPwd())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
+		
+		user.updatedLastLoggedIn();
 		
 		String accessToken = jwtProvider.createAccessToken(user.getLoginId());
 		String refreshToken = jwtProvider.createRefreshToken(user.getLoginId());

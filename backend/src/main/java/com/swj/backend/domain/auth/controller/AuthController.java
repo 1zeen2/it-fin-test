@@ -49,7 +49,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDto loginDto) {
         try {
-            Map<String, String> tokens = userService.signIn(loginDto);
+            Map<String, String> tokens = userService.login(loginDto);
             tokens.put("message", "로그인 성공");
             
             return ResponseEntity.ok(tokens);

@@ -69,14 +69,14 @@ public class User {
     @Column(nullable = false, length = 20)
     private Role role;
 
-    private LocalDateTime lastLoggedIn;
-
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    private LocalDateTime lastLoggedIn;
 
     @Builder
     public User(
@@ -113,6 +113,10 @@ public class User {
     
     public void encodePassword(String encodedPwd) {
         this.pwd = encodedPwd;
+    }
+    
+    public void updatedLastLoggedIn() {
+    	this.lastLoggedIn = LocalDateTime.now();
     }
     
 }
