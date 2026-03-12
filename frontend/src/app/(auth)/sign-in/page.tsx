@@ -216,7 +216,7 @@ export default function SignInPage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       {/* Header */}
-      <div className="flex h-auto w-full flex-col items-center justify-end pt-[95px] pb-[31px]">
+      <div className="flex h-auto w-full flex-col items-center justify-end pt-[125px] pb-[48px]">
         <h1 className="text-[40px] font-normal tracking-[0.4px] text-[#03c75a]">
           로그인 화면
         </h1>

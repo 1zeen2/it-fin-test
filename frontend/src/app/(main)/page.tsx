@@ -1,25 +1,23 @@
-import React from 'react';
+"use client";
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import Header from "@/components/main/Header";
+import HeroBanner from "@/components/main/HeroBanner";
+
+export default function MainPage() {
   return (
-    <div className='flex min-h-screen flex-col'>
-      <header className='h-16 border-b border-gray-200 bg-white'>
-        <div className='flex h-full items-center px-4 font-bold'>
-          Lafenice Main Header
-        </div>
-      </header>
+    <div className="flex w-full flex-col">
+      <div className="flex w-full flex-col bg-white">
+        <Header />
+      </div>
 
-      <main className='flex-1'>
-        {children}
-      </main>
+      {/* 본문 컨텐츠 뼈대 */}
+      <section className="flex h-auto w-full items-center justify-center bg-[#FFF] text-[#888]">
+        <HeroBanner />
+      </section>
 
-      <footer className='bg-gray-100 p-4 text-center text-sm text-gray-500'>
-        © 2026 Lafenice. All rights reserved.
-      </footer>
+      <section className="flex h-[1000px] w-full flex-col items-center p-[20px] text-[#888]">
+        [쇼핑 상품 리스트 스크롤 영역]
+      </section>
     </div>
   );
 }

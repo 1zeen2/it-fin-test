@@ -551,7 +551,7 @@ export default function SignUpPage() {
 
               {/* 선택된 언어 표시 */}
               <div className="flex cursor-pointer items-center">
-                <span className="ml-[6px] px-[16px] text-center text-[13px] font-normal text-[#303038]">
+                <span className="ml-[6px] px-[16px] text-center text-[14px] font-normal text-[#303038]">
                   {languageLabels[lang]}
                 </span>
               </div>
@@ -846,7 +846,7 @@ export default function SignUpPage() {
               type="button"
               onClick={handleNextPage}
               disabled={!isRequiredChecked}
-              className={`mt-[23px] flex h-auto w-full items-center justify-center rounded-[8px] py-[12.5px] text-[15.5px] font-medium text-white ${isRequiredChecked ? "cursor-pointer bg-[#03A94D]" : "cursor-not-allowed bg-[#8990a0]"} `}
+              className={`mt-[23px] flex h-auto w-full items-center justify-center rounded-[8px] py-[16px] text-[16px] font-semibold text-white ${isRequiredChecked ? "cursor-pointer bg-[#03A94D]" : "cursor-not-allowed bg-[#8990a0]"} `}
             >
               다음
             </button>
