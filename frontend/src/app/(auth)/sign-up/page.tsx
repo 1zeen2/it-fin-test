@@ -462,7 +462,7 @@ export default function SignUpPage() {
     const apiPayload = {
       // 1페이지 데이터 (서비스 약관 동의)
       termsAgreed: agreements.terms, // [필수] 이용 약관
-      lealnameAgreed: agreements.realname, // 실명 인증된 아이디로 가입
+      realnameAgreed: agreements.realname, // 실명 인증된 아이디로 가입
       locationAgreed: agreements.location, // 위치기반서비스 이용약관
       privacyAgreed: agreements.privacy, // 개인정보 수집 및 이용
       eventAgreed: agreements.event, // 이벤트, 혜택 정보 수신
@@ -482,7 +482,7 @@ export default function SignUpPage() {
     console.log("회원가입 요청 데이터:", apiPayload);
 
     try {
-      const response = await api.post("api/auth/signup", apiPayload);
+      const response = await api.post("/api/auth/signup", apiPayload);
       if (response.status === 200 || response.status === 201) {
         alert("회원 가입이 완료되었습니다!");
         router.push("/login");

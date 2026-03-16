@@ -1,4 +1,4 @@
-package com.swj.backend.domain.banner;
+package com.swj.backend.domain.display.banner;
 
 import java.util.List;
 

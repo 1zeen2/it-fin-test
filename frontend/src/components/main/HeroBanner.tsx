@@ -1,192 +1,279 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import api from "@/lib/axios";
+import Image from "next/image";
 
-const BANNER_ITEMS = [
-  {
-    id: 1,
-    link: "https://shopping.naver.com/mega-week",
-    bgColor: "#FFFFFF",
-    // 배경 이미지
-    bgImage: {
-      webp: "https://shop-phinf.pstatic.net/20260306_151/1772769836549hQhRH_PNG/EAB080ECA084EAB080EAB5AC%2BEBA994EAB080EC9C84ED81AC_EAB0.png?type=a1600_webp_q80",
-      fallback:
-        "https://shop-phinf.pstatic.net/20260306_151/1772769836549hQhRH_PNG/EAB080ECA084EAB080EAB5AC%2BEBA994EAB080EC9C84ED81AC_EAB0.png",
-    },
-    // 1-2. 타이틀 텍스트 이미지
-    titleLogo: {
-      webp: "https://shop-phinf.pstatic.net/20260306_154/1772769838137AYci9_PNG/EAB080ECA084EAB080EAB5AC%2BEBA994EAB080EC9C84ED81AC_ECB5.png?type=w640_webp_q80",
-      fallback:
-        "https://shop-phinf.pstatic.net/20260306_154/1772769838137AYci9_PNG/EAB080ECA084EAB080EAB5AC%2BEBA994EAB080EC9C84ED81AC_ECB5.png",
-      alt: "가전가구 메가위크",
-    },
-    // 1-3. 서브 텍스트 및 미니 상품 썸네일 배열
-    subText: "삶의 질 상승! 인기 가전 최대 할인",
-    products: [
-      {
-        webp: "https://shop-phinf.pstatic.net/20260119_174/1768785818738cfpYv_JPEG/21072798565250466_764818877.jpg?type=w240_webp_q80",
-        fallback:
-          "https://shop-phinf.pstatic.net/20260119_174/1768785818738cfpYv_JPEG/21072798565250466_764818877.jpg",
-      },
-      {
-        webp: "https://shop-phinf.pstatic.net/20250314_255/1741918966428qfmGF_JPEG/14238105237608439_2043266647.jpg?type=w240_webp_q80",
-        fallback:
-          "https://shop-phinf.pstatic.net/20250314_255/1741918966428qfmGF_JPEG/14238105237608439_2043266647.jpg",
-      },
-    ],
-  },
-  // ... 2, 3, 4번 배너도 이 규격에 맞춰 데이터만 넣으시면 됩니다!
-];
+// 타입 정의 (interface)
+interface ProductImage {
+  webp: string;
+  fallback: string;
+}
+
+interface HeroBannerItem {
+  id: number;
+  title: string; // SEO alt 텍스트
+  linkUrl: string;
+  bgImageWebp: string;
+  bgImageFallback: string;
+  titleImageWebp: string | null;
+  titleImageFallback: string | null;
+  mainText: string | null;
+  subText: string | null;
+  productsJson: ProductImage[]; // @JsonRawValue에서 rawJSON으로 저장헤서 문자열이 아니라 배열로 바로 들어옴
+}
 
 export default function HeroBanner() {
+  const [banners, setBanners] = useState<HeroBannerItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [resetTimer, setResetTimer] = useState(0);
 
-  // 슬라이드 타이머 로직 (동일)
+  const BANNER_WIDTH = 540;
+  const BANNER_GAP = 12;
+
+  // 데이터 fetch 및 초기화
   useEffect(() => {
-    if (!isPlaying) return;
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % BANNER_ITEMS.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [isPlaying]);
+    const fetchBanners = async () => {
+      try {
+        const response = await api.get("/api/v1/hero-banners");
+        setBanners(response.data);
+        setCurrentIndex(response.data.length);
+      } catch (error) {
+        console.error("Fetch Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const nextSlide = () =>
-    setCurrentIndex((prev) => (prev + 1) % BANNER_ITEMS.length);
-  const prevSlide = () =>
-    setCurrentIndex(
-      (prev) => (prev - 1 + BANNER_ITEMS.length) % BANNER_ITEMS.length,
-    );
+    fetchBanners();
+  }, []);
+
+  // 배너 순간이동 로직
+  useEffect(() => {
+    if (banners.length === 0) return;
+
+    let timer: NodeJS.Timeout;
+
+    if (currentIndex === banners.length * 2) {
+      timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(banners.length);
+      }, 500);
+    } else if (currentIndex === banners.length - 1) {
+      timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(banners.length * 2 - 1);
+      }, 500);
+    } else if (!isTransitioning) {
+      timer = setTimeout(() => setIsTransitioning(true), 50);
+    }
+
+    return () => clearTimeout(timer);
+  }, [currentIndex, banners.length, isTransitioning]);
+
+  // 오토 슬라이드
+  const isTransitioningRef = useRef(isTransitioning);
+  useEffect(() => {
+    if (banners.length === 0 || isPaused) return;
+
+    const timer = setInterval(() => {
+      if (isTransitioningRef.current) {
+        setCurrentIndex((prev) => prev + 1);
+      }
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [banners.length, isPaused, resetTimer]);
+
+  // 배너 위치 계산
+  const getTranslateX = () => {
+    if (typeof window === "undefined" || banners.length === 0) return 0;
+
+    // 배너 정 중앙 위치
+    const centerOffset = (window.innerWidth - BANNER_WIDTH) / 2;
+
+    // idx 에 따른 이동 거리 계산
+    const moveDistance = currentIndex * (BANNER_WIDTH + BANNER_GAP);
+
+    return centerOffset - moveDistance;
+  };
+
+  const handleNext = () => {
+    if (!isTransitioning || currentIndex >= banners.length * 2) return;
+
+    setCurrentIndex((prev) => prev + 1);
+    setResetTimer((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (!isTransitioning || currentIndex <= banners.length - 1) return;
+
+    setCurrentIndex((prev) => prev - 1);
+    setResetTimer((prev) => prev + 1);
+  };
+
+  if (isLoading || banners.length === 0) return null;
+
+  const extendedBanners = [...banners, ...banners, ...banners];
+
+  // 게이지 바 인덱스
+  const realIdx = currentIndex % banners.length;
 
   return (
-    <section className="relative flex w-full flex-col items-center overflow-hidden bg-white pt-[20px] pb-[40px]">
-      <div className="relative h-[340px] w-full">
-        <ul
-          className="flex h-full w-full transition-transform duration-500 ease-out"
-          style={{
-            transform: `translateX(calc(50% - 480px - ${currentIndex * (960 + 20)}px))`,
-          }}
-        >
-          {BANNER_ITEMS.map((item, index) => (
-            <li
-              key={item.id}
-              className="relative h-[260px] w-[540px] shrink-0 overflow-hidden rounded-[12px] transition-opacity duration-300"
-              style={{
-                backgroundColor: item.bgColor,
-                marginRight: "20px",
-                opacity: currentIndex === index ? 1 : 0.4,
-              }}
-            >
-              {/* 🌟 레이어 1: 배경 이미지 */}
-              <picture className="absolute inset-0 z-0 block h-full w-full">
-                <source srcSet={item.bgImage.webp} type="image/webp" />
-                <img
-                  src={item.bgImage.fallback}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              </picture>
+    <div className="relative flex w-full flex-col overflow-hidden pt-[20px] pb-[10px]">
+      {/* 슬라이드 영역 */}
+      <div
+        className={`flex ease-out ${isTransitioning ? "transition-transform duration-500" : "transition-none"}`}
+        style={{
+          transform: `translateX(${getTranslateX()}px)`,
+          gap: `${BANNER_GAP}px`,
+        }}
+      >
+        {extendedBanners.map((item, idx) => (
+          // 배열 복사를 했으므로 고유한 key값 다시 생성 (item.id + idx)
+          <div
+            key={`${item.id}-${idx}`}
+            className="relative h-[260px] w-[540px] flex-shrink-0"
+          >
+            <Link href={item.linkUrl} className="relative block h-full w-full">
+              {/* 이미지, 텍스트 렌더링 로직 */}
+              <Image
+                src={item.bgImageFallback}
+                alt={item.title}
+                fill
+                priority={idx === banners.length}
+                sizes="540px"
+                className="rounded-[12px] object-cover"
+              />
 
-              {/* 🌟 레이어 2 & 3: 컨텐츠 영역 (타이틀 폰트 이미지 + 서브텍스트 + 미니 상품) */}
-              {/* padding 값을 조절하여 텍스트의 상하좌우 위치(11시, 7시 등)를 제어할 수 있습니다. */}
-              <div className="relative z-10 flex h-full w-full flex-col justify-center px-[26px]">
-                {/* 타이틀 로고 이미지 (네이버 원본 사이즈에 맞게 높이 조정) */}
-                <picture className="mb-[10px] block h-auto w-[340px]">
-                  <source srcSet={item.titleLogo.webp} type="image/webp" />
-                  <img
-                    src={item.titleLogo.fallback}
-                    alt={item.titleLogo.alt}
-                    className="w-full object-contain"
-                  />
-                </picture>
-
-                {/* 서브 텍스트 */}
-                <p className="mb-[14px] text-[18px] leading-[24px] tracking-[-.5px] text-[#fff]">
-                  {item.subText}
-                </p>
-
-                {/* 미니 썸네일 상품 리스트 */}
-                {item.products && item.products.length > 0 && (
-                  <ul className="flex gap-[8px]">
-                    {item.products.map((prod, idx) => (
-                      <li
-                        key={idx}
-                        className="h-[86px] w-[86px] overflow-hidden rounded-[8px] border border-white/20"
+              <div className="absolute inset-0 z-10 flex h-auto flex-col justify-center px-[26px]">
+                {item.titleImageWebp && item.titleImageFallback ? (
+                  <div className="mb-[4px] block w-[320px]">
+                    <Image
+                      src={item.titleImageFallback}
+                      alt={item.mainText || item.title}
+                      width={320}
+                      height={80}
+                      sizes="320px"
+                      className="mb-[16px] h-auto w-full object-contain"
+                    />
+                    <p className="h-auto text-[18px] font-medium text-white">
+                      {item.subText}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mb-[6px] flex h-auto flex-col gap-[12px]">
+                    <h2 className="h-auto text-[32px] leading-[40px] font-bold tracking-[-1px] text-white">
+                      {item.mainText}
+                    </h2>
+                    <p className="h-auto text-[18px] font-medium text-white">
+                      {item.subText}
+                    </p>
+                  </div>
+                )}
+                {item.productsJson && item.productsJson.length > 0 && (
+                  <div className="mt-4 flex gap-2">
+                    {item.productsJson.map((prod, pIdx) => (
+                      <div
+                        key={pIdx}
+                        className="relative h-[86px] w-[86px] shrink-0 overflow-hidden rounded-md border border-white/20 shadow-sm"
                       >
-                        <picture className="block h-full w-full">
-                          <source srcSet={prod.webp} type="image/webp" />
-                          <img
-                            src={prod.fallback}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
-                        </picture>
-                      </li>
+                        <Image
+                          src={prod.fallback}
+                          alt="상품 썸네일"
+                          fill
+                          sizes="86px"
+                          className="object-cover"
+                        />
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 )}
               </div>
-
-              {/* 🌟 레이어 4: 전체 클릭을 담당하는 투명 링크 (접근성 포함) */}
-              <Link
-                href={item.link}
-                className="absolute inset-0 z-20 block outline-none"
-              >
-                <span className="sr-only">자세히 보러 가기</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+            </Link>
+          </div>
+        ))}
       </div>
 
-      {/* 컨트롤러 영역 (동일) */}
-      <div className="absolute bottom-[20px] left-1/2 z-30 flex h-[36px] -translate-x-1/2 items-center rounded-full bg-black/40 px-[16px] text-[13px] text-white backdrop-blur-sm">
-        <span className="font-bold">{currentIndex + 1}</span>
-        <span className="mx-[4px] text-white/50">/</span>
-        <span className="mr-[12px] text-white/50">{BANNER_ITEMS.length}</span>
+      {/* 하단 게이지 바 및 버튼 영역 */}
+      <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between py-[20px]">
+        <div className="relative mr-4 h-[2px] flex-1 overflow-hidden rounded-full bg-gray-200">
+          <div
+            className="absolute top-0 left-0 h-full bg-black transition-all duration-500 ease-out"
+            style={{ width: `${((realIdx + 1) / banners.length) * 100}%` }}
+          />
+        </div>
 
-        <div className="flex items-center gap-[12px]">
-          <button onClick={prevSlide} className="hover:text-white/70">
+        {/* 버튼 영역 */}
+        <div className="flex items-center text-black">
+          {/* 이전 버튼: 아이콘 16px + 패딩 12px = 40px 터치영역 */}
+          <button
+            onClick={handlePrev}
+            className="flex cursor-pointer items-center justify-center rounded-full px-[5px] py-[2px]"
+          >
             <svg
-              width="8"
-              height="12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+              viewBox="0 0 16 16"
+              className="h-[16px] w-[16px] rotate-180 fill-none"
             >
-              <path d="M7 1L2 6l5 5" />
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5.667 13l5-5-5-5"
+              ></path>
             </svg>
           </button>
 
+          {/* 구분선: 동적 높이 폰트 사이즈 기반 */}
+          <span className="mx-1 text-gray-300">|</span>
+
+          {/* 다음 버튼 */}
           <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center justify-center hover:text-white/70"
+            onClick={handleNext}
+            className="flex cursor-pointer items-center justify-center rounded-full px-[5px] py-[2px]"
           >
-            {isPlaying ? (
-              <svg width="10" height="12" fill="currentColor">
-                <path d="M0 0h3v12H0zM7 0h3v12H7z" />
+            <svg viewBox="0 0 16 16" className="h-[16px] w-[16px] fill-none">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5.667 13l5-5-5-5"
+              ></path>
+            </svg>
+          </button>
+
+          {/* 재생/일시정지 토글 버튼 */}
+          <button
+            onClick={() => setIsPaused(!isPaused)}
+            className="ml-[5px] flex cursor-pointer items-center justify-center"
+          >
+            {isPaused ? (
+              <svg viewBox="0 0 20 20" className="h-[20xp] w-[20px] fill-none">
+                <path
+                  fill="#000"
+                  fillRule="evenodd"
+                  d="M14.921 8.724c.944.59.944 1.964 0 2.554l-6.808 4.256a1.506 1.506 0 01-2.304-1.278v-8.51a1.506 1.506 0 012.304-1.278l6.809 4.256z"
+                  clipRule="evenodd"
+                ></path>
               </svg>
             ) : (
-              <svg width="10" height="12" fill="currentColor">
-                <path d="M0 0l10 6-10 6z" />
+              <svg viewBox="0 0 20 20" className="h-[20px] w-[20px] fill-none">
+                <path
+                  fill="#000"
+                  d="M7.084 4.375c.69 0 1.25.56 1.25 1.25v8.75a1.25 1.25 0 11-2.5 0v-8.75c0-.69.56-1.25 1.25-1.25zm5.834 0c.69 0 1.25.56 1.25 1.25v8.75a1.25 1.25 0 01-2.5 0v-8.75c0-.69.56-1.25 1.25-1.25z"
+                ></path>
               </svg>
             )}
           </button>
-
-          <button onClick={nextSlide} className="hover:text-white/70">
-            <svg
-              width="8"
-              height="12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M1 1l5 5-5 5" />
-            </svg>
-          </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

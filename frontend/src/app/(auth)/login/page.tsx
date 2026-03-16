@@ -153,7 +153,7 @@ export default function SignInPage() {
   // 로그인 상태 유지 및 IP 보안 토글
   const toggleCheck = () => setIsChecked(!isChecked);
 
-  const handleSignIn = async (e: SyntheticEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -164,9 +164,9 @@ export default function SignInPage() {
       localStorage.setItem("refreshToken", refreshToken);
 
       router.push("/");
-    } catch (error: unknown) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data || "로그인 실패.";
+        const errorMessage = error.response?.data?.message || "로그인 실패.";
         alert(errorMessage);
       } else {
         alert("알 수 없는 오류가 발생했습니다.");
@@ -301,7 +301,7 @@ export default function SignInPage() {
             className={`relative z-0 rounded-b-[12px] border border-[#e1e3e5] bg-white px-[24px] pt-[24px] pb-[24px] ${activeTab === "id" ? "rounded-tr-[8px]" : ""} ${activeTab === "ones" ? "rounded-tl-[8px] rounded-tr-[8px]" : ""} ${activeTab === "qr" ? "rounded-tl-[8px]" : ""} `}
           >
             {activeTab === "id" && (
-              <form onSubmit={handleSignIn}>
+              <form onSubmit={handleLogin}>
                 {/* 아이디 / 비밀번호 입력란 */}
                 <div className="flex w-full flex-col rounded-[8px] border border-[#C5CCD2]">
                   {/* 아이디 입력 (row 1) */}
@@ -324,7 +324,7 @@ export default function SignInPage() {
                         onChange={(e) => setLoginId(e.target.value)}
                         onFocus={() => setFocusedInput("loginId")}
                         onBlur={() => setFocusedInput("")}
-                        className="w-full cursor-pointer bg-transparent text-[16px] font-normal tracking-[-.5px] text-[#303038] placeholder:text-[#bebebe] focus:outline-none [&:-webkit-autofill]:shadow-[0_0_0_1000px_#fff_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#303038]"
+                        className="w-full cursor-pointer bg-transparent py-[4px] text-[16px] font-normal tracking-[-.5px] text-[#303038] placeholder:text-[#bebebe] focus:outline-none [&:-webkit-autofill]:shadow-[0_0_0_1000px_#fff_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#303038]"
                         required
                       />
                     </div>

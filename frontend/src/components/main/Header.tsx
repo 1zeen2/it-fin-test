@@ -1,8 +1,49 @@
 "use client";
-
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import Gnb from "./Gnb";
+import api from "@/lib/axios";
 
 export default function Header() {
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 로컬 스토리지에서 토큰 확인
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      // 토큰이 있다면 백엔드에 사용자 정보 요청
+      const fetchUserInfo = async () => {
+        try {
+          // 만들어둔 인터셉터로 처리
+          const response = await api.get("/api/users/me", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          // UserController가 반환하는 loginId를 상태에 저장
+          setUserName(response.data.loginId);
+        } catch (error) {
+          console.error("사용자 정보를 불러오는데 실패했습니다.", error);
+          // 토큰이 만료되었거나 유효하지 않으면 로컬 스토리지 정리
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          setUserName(null);
+        }
+      };
+
+      fetchUserInfo();
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setUserName(null); // 상태를 초기화해서 로그인 버튼을 바로 출력하는 방식
+    alert("로그아웃 되었습니다.");
+  };
+
   return (
     <header className="flex w-full flex-col items-center border-b border-[#e8ecef] bg-white">
       <div className="flex w-full max-w-[1280px] flex-col">
@@ -10,8 +51,13 @@ export default function Header() {
           {/* row 1, col 1 */}
           <div className="flex items-center gap-[20px] text-[#757575]">
             {/* 네이버 아이콘 */}
-            <button>
-              <svg className="h-[10px] w-[46px] fill-none">
+            <a
+              href="https://www.naver.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="네이버 메인으로 이동"
+            >
+              <svg className="h-[10px] w-[46px] cursor-pointer fill-none">
                 <path
                   fill="currentColor"
                   fillRule="evenodd"
@@ -19,10 +65,15 @@ export default function Header() {
                   clipRule="evenodd"
                 ></path>
               </svg>
-            </button>
+            </a>
 
             {/* 네이버 페이 아이콘 */}
-            <button className="flex items-center gap-[2px]">
+            <a
+              href="https://pay.naver.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex cursor-pointer items-center gap-[2px]"
+            >
               <svg
                 className="box h-[14px] w-[13px] fill-none"
                 viewBox="0 0 13 14"
@@ -40,16 +91,36 @@ export default function Header() {
                 </defs>
               </svg>
               <span className="text-[12px]">네이버페이</span>
-            </button>
+            </a>
           </div>
 
           {/* row 1 col 2 */}
           <div className="flex items-center gap-[8px]">
-            <button className="mr-[8px] rounded-[4px] border border-[#d3dadf] px-[7px] text-[11px] leading-[22px] font-medium text-[#121212]">
-              로그인
-            </button>
+            {userName ? (
+              /** 로그인 된 상태 => 우선 아이디만 출력 */
+              <div className="mr-[8px] flex items-center gap-[4px]">
+                <span className="text-[13px] font-bold text-[#121212]">
+                  {userName}
+                </span>
+                <span className="text-[12px] text-[#121212]">님</span>
+                {/* 임시 로그아웃 버튼 */}
+                <button
+                  onClick={handleLogout}
+                  className="ml-[6px] cursor-pointer rounded-[4px] border border-[#d3dadf] px-[7px] text-[11px] leading-[22px] font-medium text-[#757575] transition-colors hover:bg-[#f5f6f4]"
+                >
+                  로그아웃
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="mr-[8px] cursor-pointer rounded-[4px] border border-[#d3dadf] px-[7px] text-[11px] leading-[22px] font-medium text-[#121212]"
+              >
+                로그인
+              </Link>
+            )}
             <span className="text-[12px] text-[#dedadf]">|</span>
-            <button className="flex h-auto w-auto items-center justify-center p-[13px]">
+            <button className="flex h-auto w-auto cursor-pointer items-center justify-center p-[13px]">
               <div
                 className="h-[14px] w-[14px]"
                 style={{
@@ -68,7 +139,7 @@ export default function Header() {
           <div className="flex items-center justify-between gap-[24px]">
             <div className="flex items-center py-[20px]">
               <svg
-                className="h-[22px] w-[108px] fill-none"
+                className="h-[22px] w-[108px] cursor-pointer fill-none"
                 viewBox="0 0 108 22"
               >
                 <path
@@ -104,7 +175,7 @@ export default function Header() {
                 placeholder="상품명 또는 브랜드 입력"
               />
               <div className="flex h-auto w-auto items-center justify-between gap-[2px]">
-                <div className="h-auto w-auto px-[10px] py-[16px]">
+                <div className="h-auto w-auto cursor-pointer px-[10px] py-[16px]">
                   <svg className="h-[8px] w-[12px] rotate-180 fill-none text-[#7346f3]">
                     <path
                       fill="currentColor"
@@ -116,7 +187,7 @@ export default function Header() {
                 </div>
 
                 <span className="text-[12px] text-[#e8ecef]">|</span>
-                <button className="mr-[3px] h-auto w-auto p-[8px] text-[#7346f3] outline-none">
+                <button className="mr-[3px] h-auto w-auto cursor-pointer p-[8px] text-[#7346f3] outline-none">
                   <svg
                     viewBox="0 0 24 24"
                     className="h-[24px] w-[24px] fill-none"
@@ -143,7 +214,7 @@ export default function Header() {
 
           {/* row 2 col 2 */}
           <div className="flex items-center gap-[26px] text-[13px] leading-[16px] font-medium text-[#121212]">
-            <button className="flex h-auto w-auto flex-col items-center gap-[4px] py-[6px]">
+            <button className="flex h-auto w-auto cursor-pointer flex-col items-center gap-[4px] py-[6px]">
               <svg className="h-[28px] w-[28px] fill-none">
                 <path
                   stroke="currentColor"
@@ -153,7 +224,7 @@ export default function Header() {
               </svg>
               카테고리
             </button>
-            <button className="flex h-auto w-auto flex-col items-center gap-[4px] py-[6px]">
+            <button className="flex h-auto w-auto cursor-pointer flex-col items-center gap-[4px] py-[6px]">
               <svg className="h-[28px] w-[28px] fill-none">
                 <path
                   stroke="currentColor"
@@ -165,7 +236,7 @@ export default function Header() {
               </svg>
               마이쇼핑
             </button>
-            <button className="flex flex-col items-center gap-[4px]">
+            <button className="flex cursor-pointer flex-col items-center gap-[4px]">
               <svg className="h-[28px] w-[28px] fill-none">
                 <path
                   stroke="currentColor"

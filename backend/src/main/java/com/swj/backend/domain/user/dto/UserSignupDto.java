@@ -36,7 +36,7 @@ public class UserSignupDto {
         return User.builder()
                 .loginId(this.loginId)
                 .pwd(this.pwd)
-                .email(this.email)
+                .email(this.email != null && this.email.isBlank() ? null : this.email)
                 .name(this.name)
                 .birth(this.birth)
                 .telecom(this.telecom)
