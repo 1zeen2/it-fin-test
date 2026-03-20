@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import api from "@/lib/axios";
 
 interface TrendingKeyword {
@@ -67,9 +66,11 @@ export default function TrendingKeyword() {
             const rank = currentPage * itemPerPage + idx + 1;
 
             return (
-              <Link
+              <a
                 key={item.id}
                 href={item.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group flex flex-col gap-[21px]"
               >
                 {/* 이미지 + keyword 출력 영역 */}
@@ -95,7 +96,7 @@ export default function TrendingKeyword() {
                 <p className="px-[4px] text-[20px] font-medium tracking-[-.5px] text-[#333]">
                   {item.normalizedKeyword}
                 </p>
-              </Link>
+              </a>
             );
           })}
         </div>

@@ -28,6 +28,6 @@ VALUES
   ('하이엔드', 'https://shop-phinf.pstatic.net/20260313_152/1773387302040SVAu7_PNG/favicon_ED9598EC9DB4EC9794EB939C.png?type=f156_png', '하이엔드', 14, 0);
   
   commit;
-  select * from product_categories;
+  select * from trending_keywords;
   
   ALTER TABLE product_categories MODIFY COLUMN id BIGINT AUTO_INCREMENT;

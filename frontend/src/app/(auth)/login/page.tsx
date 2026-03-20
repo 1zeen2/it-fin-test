@@ -786,8 +786,10 @@ export default function SignInPage() {
             회원정보 고객센터
           </a>
         </div>
-        <div className="mt-2 text-sm">
-          IT-FIN 과제 제출을 위해 제작하였습니다.
+        <div className="mt-2 text-center text-sm break-keep">
+          본 프로젝트는 개인 프로젝트를 위헤 제작되었으며
+          <br className="md:block" />
+          상업적인 목적은 일절 없음을 명확히 밝힙니다.
         </div>
       </div>
     </div>

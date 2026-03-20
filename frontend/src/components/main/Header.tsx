@@ -1,11 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Gnb from "./Gnb";
 import api from "@/lib/axios";
 
 export default function Header() {
+  const router = useRouter();
   const [userName, setUserName] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // 컴포넌트 마운트 시 로컬 스토리지에서 토큰 확인
@@ -42,6 +45,35 @@ export default function Header() {
     localStorage.removeItem("refreshToken");
     setUserName(null); // 상태를 초기화해서 로그인 버튼을 바로 출력하는 방식
     alert("로그아웃 되었습니다.");
+  };
+
+  const handleSearch = async () => {
+    const trimedQuery = searchQuery.trim();
+
+    if (!trimedQuery) {
+      setSearchQuery("");
+
+      router.push("/search");
+      return;
+    }
+
+    const externalUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(trimedQuery)}`;
+    window.open(externalUrl, "_blank", "noopener,noreferrer");
+
+    api
+      .post("/api/v1/trending-keywords/search", {
+        keyword: trimedQuery,
+      })
+      .catch((error) => {
+        console.error("검색어 카운트 로직 오류: ", error);
+      });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
   };
 
   return (
@@ -171,6 +203,9 @@ export default function Header() {
             <div className="flex h-auto w-[500px] items-center justify-between rounded-[8px] border border-[#7346f3] pl-[18px] text-[15px] leading-[18px]">
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full text-[#121212] outline-none placeholder:text-[#949494]"
                 placeholder="상품명 또는 브랜드 입력"
               />
@@ -187,7 +222,10 @@ export default function Header() {
                 </div>
 
                 <span className="text-[12px] text-[#e8ecef]">|</span>
-                <button className="mr-[3px] h-auto w-auto cursor-pointer p-[8px] text-[#7346f3] outline-none">
+                <button
+                  onClick={handleSearch}
+                  className="mr-[3px] h-auto w-auto cursor-pointer p-[8px] text-[#7346f3] outline-none"
+                >
                   <svg
                     viewBox="0 0 24 24"
                     className="h-[24px] w-[24px] fill-none"
@@ -257,9 +295,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* =======================================
-            [3층] GNB (메뉴바)
-            ======================================= */}
         <div className="w-full">
           <Gnb />
         </div>

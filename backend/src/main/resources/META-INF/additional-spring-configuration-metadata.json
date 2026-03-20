@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "trend.keyword.min-product-count",
+      "type": "java.lang.Integer",
+      "description": "트렌드 검색어로 등록되기 위한 네이버 쇼핑 최소 상품 개수"
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT 암호화 시크릿 키"
+    },
+    {
+      "name": "jwt.expiration-time",
+      "type": "java.lang.Long",
+      "description": "JWT 액세스 토큰 유효 시간 (밀리초)"
+    },
+    {
+      "name": "jwt.refresh-expiration-time",
+      "type": "java.lang.Long",
+      "description": "JWT 리프레시 토큰 유효 시간 (밀리초)"
+    }
+  ]
+}

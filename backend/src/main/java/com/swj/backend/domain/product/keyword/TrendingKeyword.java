@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -49,5 +50,28 @@ public class TrendingKeyword {
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
+	
+	@Builder
+	public TrendingKeyword(
+			String keyword,
+			String normalizedKeyword,
+			String imageUrl,
+			String linkUrl,
+			Integer searchCount,
+			LocalDate baseDate,
+			Boolean isActive)
+	{
+		this.keyword = keyword;
+		this.normalizedKeyword = normalizedKeyword;
+		this.imageUrl = imageUrl;
+		this.linkUrl = linkUrl;
+		this.searchCount = searchCount != null ? searchCount : 1; // null 방지 기본값
+		this.baseDate = baseDate != null ? baseDate : LocalDate.now();
+		this.isActive = isActive != null ? isActive : true;
+	}
+	
+	public void incrementSearchCount() {
+		this.searchCount++;
+	}
 	
 }

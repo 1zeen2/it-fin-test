@@ -27,3 +27,7 @@ jwt:
   expiration-time: 3600000
   # Refresh Token 유효 시간: 14일 (1209600000 밀리초)
   refresh-expiration-time: 1209600000
+
+trend:
+  keyword:
+    min-product-count: 15
