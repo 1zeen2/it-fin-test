@@ -10,6 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -54,15 +55,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		filterChain.doFilter(request, response);
 	}
 	
-	// Http Header에서 'Bearer ' (공백 포함)로 시작하는 토큰만 잘라냄
 	private String resolveToken(HttpServletRequest request) {
-		
-        String bearerToken = request.getHeader("Authorization");
-        
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        
-        return null;
-    }
+	    Cookie[] cookies = request.getCookies();
+	    
+	    if (cookies != null) {
+	        for (Cookie cookie : cookies) {
+	            if ("accessToken".equals(cookie.getName())) {
+	                return cookie.getValue();
+	            }
+	        }
+	    }
+	    return null;
+	}
 }
