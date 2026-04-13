@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll() // "/api/auth/" 하위 경로는 모두 허용
                 .requestMatchers("/api/v1/**").permitAll() // 배너, 네비바 등
                 .requestMatchers("/api/product/**").permitAll() // 상품 카테고리 출력
+                .requestMatchers("/api/blogs/**").permitAll() // 상품 카테고리 출력
                 
                 .anyRequest().authenticated()) // 그 외 모든 요청은 token 필요
             
@@ -63,7 +64,12 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
     	CorsConfiguration configuration = new CorsConfiguration();
     	
-    	configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+    	configuration.setAllowedOrigins(Arrays.asList(
+    			"http://localhost:3000",
+    			"http://192.168.219.100:3000", // 우리 집
+    			"http://192.168.123.107:3000", // 
+    			"https://kena-overwarmed-kimiko.ngrok-free.dev"
+    			));
     	configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     	configuration.setAllowedHeaders(Arrays.asList("*"));
     	configuration.setAllowCredentials(true); // 쿠기, Authorization 헤더 등 자격 증명을 포함 (JWT 사용 시 필수)

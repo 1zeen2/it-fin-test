@@ -28,6 +28,9 @@ public class User {
     @Column(nullable = false, length = 30)
     private String name;
     
+    @Column(length = 30)
+    private String nickname;
+    
     @Column(nullable = false, length = 8)
     private String birth;
     
@@ -44,6 +47,9 @@ public class User {
 
     @Column(nullable = false, length = 15)
     private String phone;
+    
+    @Column(length = 1000)
+    private String profileImageUrl;
     
     /**
      * 1페이지: 서비스 약관 동의 
@@ -81,8 +87,9 @@ public class User {
     @Builder
     public User(
     		String loginId, String pwd, String email,
-    		String name, String birth, String telecom, Gender gender, Nationality nationality,
-    		String phone, 
+    		String name, String nickname, String birth, String telecom,
+    		Gender gender, Nationality nationality,
+    		String phone, String profileImageUrl, 
             Boolean termsAgreed, Boolean realnameAgreed, Boolean locationAgreed,
             Boolean privacyAgreed, Boolean eventAgreed,
             Boolean authTermsAgreed,
@@ -92,11 +99,13 @@ public class User {
     	this.pwd = pwd;
     	this.email = email;
         this.name = name;
+        this.nickname = nickname;
         this.birth = birth;
         this.telecom = telecom;
         this.gender = gender;
         this.nationality = nationality;
         this.phone = phone;
+        this.profileImageUrl = profileImageUrl;
         
         // 약관 세팅 (null 방지)
         this.termsAgreed = termsAgreed != null ? termsAgreed : false;

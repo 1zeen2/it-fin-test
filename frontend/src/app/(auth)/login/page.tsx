@@ -1,30 +1,32 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import type { SyntheticEvent } from "react";
-import { QRCodeSVG } from "qrcode.react";
-import { useRouter } from "next/navigation";
-import api from "@/lib/axios";
-import axios from "axios";
+import { useState, useEffect, useRef } from 'react';
+import type { SyntheticEvent } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/feature/auth/AuthContext';
+import api from '@/lib/axios';
+import axios from 'axios';
+import { log } from 'console';
 
 const TABS = [
   {
-    id: "id",
-    label: "ID/전화번호",
-    activeIconPos: "-54px -314px",
-    inactiveIconPos: "-72px -314px",
+    id: 'id',
+    label: 'ID/전화번호',
+    activeIconPos: '-54px -314px',
+    inactiveIconPos: '-72px -314px',
   },
   {
-    id: "ones",
-    label: "일회용 번호",
-    activeIconPos: "-316px -276px",
-    inactiveIconPos: "-316px -294px",
+    id: 'ones',
+    label: '일회용 번호',
+    activeIconPos: '-316px -276px',
+    inactiveIconPos: '-316px -294px',
   },
   {
-    id: "qr",
-    label: "QR코드",
-    activeIconPos: "-316px -240px",
-    inactiveIconPos: "-18px -314px",
+    id: 'qr',
+    label: 'QR코드',
+    activeIconPos: '-316px -240px',
+    inactiveIconPos: '-18px -314px',
   },
 ] as const;
 
@@ -32,33 +34,35 @@ const TABS = [
 const formatTime = (seconds: number) => {
   const mm = Math.floor(seconds / 60);
   const ss = seconds % 60;
-  return `0${mm}분 ${ss.toString().padStart(2, "0")}초`;
+  return `0${mm}분 ${ss.toString().padStart(2, '0')}초`;
 };
 
 // 컴포넌트
 export default function SignInPage() {
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"id" | "ones" | "qr">("id");
+  const { login } = useAuth();
+
+  const [activeTab, setActiveTab] = useState<'id' | 'ones' | 'qr'>('id');
   const [focusedInput, setFocusedInput] = useState<
-    "" | "loginId" | "pwd" | "ones"
-  >("");
+    '' | 'loginId' | 'pwd' | 'ones'
+  >('');
 
   /** id, 전화번호 입력 변수 */
-  const [loginId, setLoginId] = useState("");
-  const [pwd, setPwd] = useState("");
+  const [loginId, setLoginId] = useState('');
+  const [pwd, setPwd] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [isIpSecurity, setIsIpSecurity] = useState(false);
 
   /** 일회용 번호 입력 변수 */
-  const [disposableNum, setDisposableNum] = useState(""); // 일회용 번호
+  const [disposableNum, setDisposableNum] = useState(''); // 일회용 번호
 
   /** QR 로그인 관련 상태 */
-  const [qrSessionId, setQrSessionId] = useState("");
-  const [qrAuthNumber, setQrAuthNumber] = useState("");
+  const [qrSessionId, setQrSessionId] = useState('');
+  const [qrAuthNumber, setQrAuthNumber] = useState('');
   const [qrTimeLeft, setQrTimeLeft] = useState(180); // 3분 = 180초
-  const [qrStatus, setQrStatus] = useState<"PENDING" | "SUCCESS" | "EXPIRED">(
-    "PENDING",
+  const [qrStatus, setQrStatus] = useState<'PENDING' | 'SUCCESS' | 'EXPIRED'>(
+    'PENDING',
   );
   const [qrRefreshKey, setQrRefreshKey] = useState(0); // 재시도 버튼
 
@@ -71,11 +75,11 @@ export default function SignInPage() {
     // QR 생성 및 SSE 연결 함수
     const initQrSignIn = async () => {
       try {
-        setQrStatus("PENDING");
+        setQrStatus('PENDING');
         setQrTimeLeft(180);
 
         // 서버에 QR 세션 요청
-        const res = await api.post("/api/auth/qr");
+        const res = await api.post('/api/auth/qr');
         const { sessionId, authNumber } = res.data;
 
         setQrSessionId(sessionId);
@@ -86,7 +90,7 @@ export default function SignInPage() {
           setQrTimeLeft((prev) => {
             if (prev <= 1) {
               clearInterval(timer);
-              setQrStatus("EXPIRED");
+              setQrStatus('EXPIRED');
 
               if (eventSourceRef.current) eventSourceRef.current.close();
               return 0;
@@ -103,39 +107,36 @@ export default function SignInPage() {
         eventSourceRef.current = eventSource;
 
         // 연결 성공 이벤트
-        eventSource.addEventListener("connected", (e) => {
-          console.log("SSE 연결 성공: ", e.data);
+        eventSource.addEventListener('connected', (e) => {
+          console.log('SSE 연결 성공: ', e.data);
         });
 
         // 인증 성공 이벤트
-        eventSource.addEventListener("auth-success", (e) => {
-          console.log("QR 인증 완료 페이로드: ", e.data);
-          const data = JSON.parse(e.data);
+        eventSource.addEventListener('auth-success', (e) => {
+          console.log('QR 인증 완료 페이로드: ', e.data);
 
-          // 발급받은 토큰 저장
-          localStorage.setItem("accessToken", data.accessToken);
-          localStorage.setItem("refreshToken", data.refreshToken);
-
-          setQrStatus("SUCCESS");
+          setQrStatus('SUCCESS');
           clearInterval(timer);
           eventSource.close();
 
-          alert("QR 로그인이 완료되었습니다.");
-          router.push("/"); // 로그인 성공 시 메인 페이지로 보냄
+          login();
+
+          alert('QR 로그인이 완료되었습니다.');
+          router.push('/');
         });
 
         eventSource.onerror = (err) => {
-          console.error("SSE 에러 발생: ", err);
+          console.error('SSE 에러 발생: ', err);
           eventSource.close();
         };
       } catch (error) {
-        console.error("QR 생성 실패: ", error);
-        alert("QR 코드 생성에 실패했습니다. 다시 시도해주세요");
+        console.error('QR 생성 실패: ', error);
+        alert('QR 코드 생성에 실패했습니다. 다시 시도해주세요');
       }
     };
 
     // qr탭이 활성화됐을 때만 실행
-    if (activeTab === "qr") {
+    if (activeTab === 'qr') {
       initQrSignIn();
     }
 
@@ -157,20 +158,11 @@ export default function SignInPage() {
     e.preventDefault();
 
     try {
-      const response = await api.post("/api/auth/login", { loginId, pwd });
-      const { accessToken, refreshToken } = response.data;
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-
-      router.push("/");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || "로그인 실패.";
-        alert(errorMessage);
-      } else {
-        alert("알 수 없는 오류가 발생했습니다.");
-      }
+      await api.post('/api/auth/login', { loginId, pwd });
+      login();
+      router.push('/');
+    } catch {
+      alert('로그인에 실패했습니다.');
     }
     // isChecked, isIpaSecurity는 추후 API 페이로드에 담아 보낼 예정
   };
@@ -180,7 +172,7 @@ export default function SignInPage() {
     e.preventDefault();
 
     if (disposableNum.length !== 8) {
-      alert("일회용 번호 8자리를 정확히 입력해 주세요.");
+      alert('일회용 번호 8자리를 정확히 입력해 주세요.');
 
       return;
     }
@@ -190,25 +182,20 @@ export default function SignInPage() {
      *  백엔드 파라미터명인 ("authNumber")와 동일하게 작성
      */
     try {
-      const response = await api.post("/api/auth/disposable/verify", null, {
+      await api.post('/api/auth/disposable/verify', null, {
         params: { authNumber: disposableNum },
       });
-
-      const { accessToken, refreshToken } = response.data;
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-
-      router.push("/");
+      login();
+      router.push('/');
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || "로그인 실패.";
+        const errorMessage = error.response?.data?.message || '로그인 실패.';
 
         alert(errorMessage);
 
-        setDisposableNum(""); // 실패 시 입력창 초기화
+        setDisposableNum(''); // 실패 시 입력창 초기화
       } else {
-        alert("알 수 없는 오류가 발생했습니다.");
+        alert('알 수 없는 오류가 발생했습니다.');
       }
     }
   };
@@ -237,38 +224,38 @@ export default function SignInPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative flex flex-1 cursor-pointer items-center justify-center gap-[8px] ${
                     isActive
-                      ? "z-20 rounded-t-[12px] border border-[#e1e3e5] border-b-white bg-white"
-                      : ""
+                      ? 'z-20 rounded-t-[12px] border border-[#e1e3e5] border-b-white bg-white'
+                      : ''
                   } ${
-                    (activeTab === "id" && tab.id === "qr") ||
-                    (activeTab === "qr" && tab.id === "ones")
-                      ? "border-l border-[#e1e3e5]"
-                      : ""
+                    (activeTab === 'id' && tab.id === 'qr') ||
+                    (activeTab === 'qr' && tab.id === 'ones')
+                      ? 'border-l border-[#e1e3e5]'
+                      : ''
                   } `}
                 >
                   {/* 왼쪽 S자 곡선 (ones 탭, qr 탭일 때만 활성화) */}
-                  {isActive && (tab.id === "ones" || tab.id === "qr") && (
+                  {isActive && (tab.id === 'ones' || tab.id === 'qr') && (
                     <span
                       className="absolute bottom-[-9px] -left-[14px] z-10 h-[62px] w-[26px] bg-no-repeat"
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundSize: "336px 330px",
-                        backgroundPosition: "-225px -104px",
-                        transform: "scaleX(-1)",
+                        backgroundSize: '336px 330px',
+                        backgroundPosition: '-225px -104px',
+                        transform: 'scaleX(-1)',
                       }}
                     />
                   )}
 
                   {/* 오른쪽 S자 곡선 (id 탭, ones 탭일 때만 활성화) */}
-                  {isActive && (tab.id === "id" || tab.id === "ones") && (
+                  {isActive && (tab.id === 'id' || tab.id === 'ones') && (
                     <span
                       className="absolute -right-[14px] bottom-[-9px] z-10 h-[62px] w-[26px] bg-no-repeat"
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundSize: "336px 330px",
-                        backgroundPosition: "-225px -104px",
+                        backgroundSize: '336px 330px',
+                        backgroundPosition: '-225px -104px',
                       }}
                     />
                   )}
@@ -282,12 +269,12 @@ export default function SignInPage() {
                       backgroundPosition: isActive
                         ? tab.activeIconPos
                         : tab.inactiveIconPos,
-                      backgroundSize: "336px 330px",
+                      backgroundSize: '336px 330px',
                     }}
                   />
                   {/* 탭 텍스트 */}
                   <span
-                    className={`relative z-20 text-center ${isActive ? "text-[#333]" : "text-[#777]"}`}
+                    className={`relative z-20 text-center ${isActive ? 'text-[#333]' : 'text-[#777]'}`}
                   >
                     {tab.label}
                   </span>
@@ -298,15 +285,15 @@ export default function SignInPage() {
 
           {/* 1-2. 하단 폼 컨텐츠 영역 (하얀색 바탕) */}
           <div
-            className={`relative z-0 rounded-b-[12px] border border-[#e1e3e5] bg-white px-[24px] pt-[24px] pb-[24px] ${activeTab === "id" ? "rounded-tr-[8px]" : ""} ${activeTab === "ones" ? "rounded-tl-[8px] rounded-tr-[8px]" : ""} ${activeTab === "qr" ? "rounded-tl-[8px]" : ""} `}
+            className={`relative z-0 rounded-b-[12px] border border-[#e1e3e5] bg-white px-[24px] pt-[24px] pb-[24px] ${activeTab === 'id' ? 'rounded-tr-[8px]' : ''} ${activeTab === 'ones' ? 'rounded-tl-[8px] rounded-tr-[8px]' : ''} ${activeTab === 'qr' ? 'rounded-tl-[8px]' : ''} `}
           >
-            {activeTab === "id" && (
+            {activeTab === 'id' && (
               <form onSubmit={handleLogin}>
                 {/* 아이디 / 비밀번호 입력란 */}
                 <div className="flex w-full flex-col rounded-[8px] border border-[#C5CCD2]">
                   {/* 아이디 입력 (row 1) */}
                   <div className="relative flex w-full items-center border-b border-[#C5CCD2] pt-[8px] pr-[12px] pb-[7px] pl-[15px]">
-                    {focusedInput === "loginId" && (
+                    {focusedInput === 'loginId' && (
                       <div className="pointer-events-none absolute -inset-[1px] z-10 rounded-t-[8px] border-[2px] border-[#09aa5c]" />
                     )}
 
@@ -322,8 +309,8 @@ export default function SignInPage() {
                         type="text"
                         value={loginId}
                         onChange={(e) => setLoginId(e.target.value)}
-                        onFocus={() => setFocusedInput("loginId")}
-                        onBlur={() => setFocusedInput("")}
+                        onFocus={() => setFocusedInput('loginId')}
+                        onBlur={() => setFocusedInput('')}
                         className="w-full cursor-pointer bg-transparent py-[4px] text-[16px] font-normal tracking-[-.5px] text-[#303038] placeholder:text-[#bebebe] focus:outline-none [&:-webkit-autofill]:shadow-[0_0_0_1000px_#fff_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#303038]"
                         required
                       />
@@ -334,7 +321,7 @@ export default function SignInPage() {
                         type="button"
                         onMouseDown={(e) => {
                           e.preventDefault();
-                          setLoginId("");
+                          setLoginId('');
                         }}
                         className="relative z-20 flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center"
                       >
@@ -343,8 +330,8 @@ export default function SignInPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                            backgroundPosition: "-292px 0px",
-                            backgroundSize: "336px 330px",
+                            backgroundPosition: '-292px 0px',
+                            backgroundSize: '336px 330px',
                           }}
                         />
                       </button>
@@ -353,14 +340,14 @@ export default function SignInPage() {
 
                   {/* 비밀번호 입력란 (row 2) */}
                   <div className="relative flex h-[58px] items-center gap-[8px] pr-[12px] pl-[15px]">
-                    {focusedInput === "pwd" && (
+                    {focusedInput === 'pwd' && (
                       <div className="pointer-events-none absolute -top-[1px] -right-[1px] -bottom-[1px] -left-[1px] z-10 rounded-b-[8px] border border-[#09aa5c]" />
                     )}
 
                     <div className="relative z-20 flex min-w-0 flex-1 flex-col justify-center">
                       <label
                         htmlFor="pwd"
-                        className={`text-[12px] leading-[15px] tracking-[-.8px] transition-colors ${focusedInput === "pwd" ? "text-[#09aa5c]" : "text-[#767678]"}`}
+                        className={`text-[12px] leading-[15px] tracking-[-.8px] transition-colors ${focusedInput === 'pwd' ? 'text-[#09aa5c]' : 'text-[#767678]'}`}
                       >
                         비밀번호
                       </label>
@@ -369,8 +356,8 @@ export default function SignInPage() {
                         type="password"
                         value={pwd}
                         onChange={(e) => setPwd(e.target.value)}
-                        onFocus={() => setFocusedInput("pwd")}
-                        onBlur={() => setFocusedInput("")}
+                        onFocus={() => setFocusedInput('pwd')}
+                        onBlur={() => setFocusedInput('')}
                         className="w-full cursor-pointer bg-transparent text-[16px] leading-[22px] font-normal tracking-[-.2px] text-[#303038] placeholder:text-[#bebebe] focus:outline-none [&:-webkit-autofill]:shadow-[0_0_0_1000px_#fff_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:#303038]"
                         required
                       />
@@ -381,7 +368,7 @@ export default function SignInPage() {
                         type="button"
                         onMouseDown={(e) => {
                           e.preventDefault();
-                          setPwd("");
+                          setPwd('');
                         }}
                         className="relative z-20 flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center"
                       >
@@ -390,8 +377,8 @@ export default function SignInPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                            backgroundPosition: "-292px 0px",
-                            backgroundSize: "336px 330px",
+                            backgroundPosition: '-292px 0px',
+                            backgroundSize: '336px 330px',
                           }}
                         />
                       </button>
@@ -410,14 +397,14 @@ export default function SignInPage() {
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundSize: "336px 330px",
+                        backgroundSize: '336px 330px',
                         backgroundPosition: isChecked
-                          ? "-66px -292px"
-                          : "-292px -236px",
+                          ? '-66px -292px'
+                          : '-292px -236px',
                       }}
                     />
                     <span
-                      className={`ml-[8px] text-[14px] tracking-[-0.5px] ${isChecked ? "font-medium text-[#03c75a]" : "text-[#767678]"}`}
+                      className={`ml-[8px] text-[14px] tracking-[-0.5px] ${isChecked ? 'font-medium text-[#03c75a]' : 'text-[#767678]'}`}
                     >
                       로그인 상태 유지
                     </span>
@@ -437,11 +424,11 @@ export default function SignInPage() {
 
                       <label
                         htmlFor="switch"
-                        className={`relative block h-full w-full rounded-full transition-colors ${isIpSecurity ? "bg-[#09aa5c]" : "bg-[#a5adb8]"}`}
+                        className={`relative block h-full w-full rounded-full transition-colors ${isIpSecurity ? 'bg-[#09aa5c]' : 'bg-[#a5adb8]'}`}
                       >
                         {/* ON 텍스트 */}
                         <span
-                          className={`absolute top-1/2 left-[7px] -translate-y-1/2 cursor-pointer text-[11px] leading-[20px] font-bold tracking-[-.3px] text-white transition-opacity ${isIpSecurity ? "opacity-100" : "opacity-0"} `}
+                          className={`absolute top-1/2 left-[7px] -translate-y-1/2 cursor-pointer text-[11px] leading-[20px] font-bold tracking-[-.3px] text-white transition-opacity ${isIpSecurity ? 'opacity-100' : 'opacity-0'} `}
                           role="checkbox"
                           aria-checked="true"
                         >
@@ -450,7 +437,7 @@ export default function SignInPage() {
 
                         {/* OFF 텍스트 */}
                         <span
-                          className={`absolute top-1/2 right-[4px] -translate-y-1/2 cursor-pointer text-[11px] leading-[20px] font-bold tracking-[-.3px] text-white transition-opacity ${isIpSecurity ? "opacity-0" : "opacity-100"} `}
+                          className={`absolute top-1/2 right-[4px] -translate-y-1/2 cursor-pointer text-[11px] leading-[20px] font-bold tracking-[-.3px] text-white transition-opacity ${isIpSecurity ? 'opacity-0' : 'opacity-100'} `}
                           role="checkbox"
                           aria-checked="false"
                         >
@@ -459,7 +446,7 @@ export default function SignInPage() {
 
                         {/* 스위치 핸들 (동그란 버튼 - 스프라이트 이미지 적용 가능) */}
                         <span
-                          className={`absolute top-[2px] h-[16px] w-[16px] cursor-pointer rounded-full bg-white shadow-sm transition-all duration-200 ${isIpSecurity ? "left-[26px]" : "left-[2px]"} `}
+                          className={`absolute top-[2px] h-[16px] w-[16px] cursor-pointer rounded-full bg-white shadow-sm transition-all duration-200 ${isIpSecurity ? 'left-[26px]' : 'left-[2px]'} `}
                         />
                       </label>
                     </div>
@@ -490,13 +477,13 @@ export default function SignInPage() {
               </form>
             )}
 
-            {activeTab === "ones" && (
+            {activeTab === 'ones' && (
               <form onSubmit={handleDisposableSignIn}>
                 {/* 안내 텍스트 */}
                 <div className="mb-[16px] flex flex-col items-center justify-center text-[15px] leading-[21px] tracking-[-.6px] text-[#1e1e23]">
                   {/* 첫 번째 줄 (Row 1) */}
                   <div className="flex items-center justify-center pt-[16px]">
-                    네이버앱의{" "}
+                    네이버앱의{' '}
                     <span className="mx-[3px] font-medium text-[#09aa5c]">
                       메뉴 &gt; 설정
                     </span>
@@ -506,8 +493,8 @@ export default function SignInPage() {
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundSize: "336px 330px",
-                        backgroundPosition: "-316px -222px",
+                        backgroundSize: '336px 330px',
+                        backgroundPosition: '-316px -222px',
                       }}
                     />
                     <span className="ml-[4px] font-medium text-[#09aa5c]">
@@ -524,8 +511,8 @@ export default function SignInPage() {
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundSize: "336px 330px",
-                        backgroundPosition: "-285px -103px",
+                        backgroundSize: '336px 330px',
+                        backgroundPosition: '-285px -103px',
                       }}
                     />
                     <span className="font-medium text-[#09aa5c]">
@@ -542,8 +529,8 @@ export default function SignInPage() {
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundSize: "336px 330px",
-                        backgroundPosition: "-275px -64px",
+                        backgroundSize: '336px 330px',
+                        backgroundPosition: '-275px -64px',
                       }}
                     >
                       <span className="sr-only">도움말</span>
@@ -553,7 +540,7 @@ export default function SignInPage() {
 
                 {/* 일회용 번호 입력창 */}
                 <div
-                  className={`relative flex h-[50px] items-center rounded-[6px] border bg-white px-[15px] transition-colors ${focusedInput === "ones" ? "border-[#03c75a] ring-1 ring-[#03c75a]" : "border-[#c6c6c6]"}`}
+                  className={`relative flex h-[50px] items-center rounded-[6px] border bg-white px-[15px] transition-colors ${focusedInput === 'ones' ? 'border-[#03c75a] ring-1 ring-[#03c75a]' : 'border-[#c6c6c6]'}`}
                 >
                   <input
                     type="text"
@@ -562,8 +549,8 @@ export default function SignInPage() {
                     placeholder="번호를 입력하세요."
                     value={disposableNum}
                     onChange={(e) => setDisposableNum(e.target.value)}
-                    onFocus={() => setFocusedInput("ones")}
-                    onBlur={() => setFocusedInput("")}
+                    onFocus={() => setFocusedInput('ones')}
+                    onBlur={() => setFocusedInput('')}
                     className="w-full bg-transparent text-center text-[16px] font-normal tracking-[-.2px] text-[#303038] placeholder:text-[#777777] focus:outline-none"
                     autoComplete="off"
                     maxLength={8} // 일회용 번호는 보통 8자리
@@ -575,7 +562,7 @@ export default function SignInPage() {
                       type="button"
                       onMouseDown={(e) => {
                         e.preventDefault();
-                        setDisposableNum("");
+                        setDisposableNum('');
                       }}
                       className="relative z-20 flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center"
                     >
@@ -584,8 +571,8 @@ export default function SignInPage() {
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                          backgroundPosition: "-292px 0px",
-                          backgroundSize: "336px 330px",
+                          backgroundPosition: '-292px 0px',
+                          backgroundSize: '336px 330px',
                         }}
                       />
                     </button>
@@ -596,7 +583,7 @@ export default function SignInPage() {
                 <div className="mt-[10px]">
                   <button
                     type="submit"
-                    className={`flex h-12.5 w-full cursor-pointer items-center justify-center rounded-lg text-[17px] leading-[24px] font-normal tracking-[-.4px] text-white ${disposableNum.length > 0 ? "bg-[#09aa5c]" : "cursor-not-allowed bg-[#a5adb8]"} `}
+                    className={`flex h-12.5 w-full cursor-pointer items-center justify-center rounded-lg text-[17px] leading-[24px] font-normal tracking-[-.4px] text-white ${disposableNum.length > 0 ? 'bg-[#09aa5c]' : 'cursor-not-allowed bg-[#a5adb8]'} `}
                     disabled={disposableNum.length === 0}
                   >
                     로그인
@@ -605,9 +592,9 @@ export default function SignInPage() {
               </form>
             )}
 
-            {activeTab === "qr" && (
+            {activeTab === 'qr' && (
               <div className="flex flex-col items-center justify-center pt-[4px]">
-                {qrStatus === "EXPIRED" ? (
+                {qrStatus === 'EXPIRED' ? (
                   // 유효시간 만료 화면
                   <div className="flex w-full flex-col items-center justify-center py-[20px]">
                     <div
@@ -615,8 +602,8 @@ export default function SignInPage() {
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                        backgroundPosition: "-66px -150px",
-                        backgroundSize: "336px 330px",
+                        backgroundPosition: '-66px -150px',
+                        backgroundSize: '336px 330px',
                       }}
                     />
                     <div className="text-center text-[12.5px] leading-[19px] text-[#8e8e8e]">
@@ -633,8 +620,8 @@ export default function SignInPage() {
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                          backgroundSize: "336px 330px",
-                          backgroundPosition: "-292px -214px",
+                          backgroundSize: '336px 330px',
+                          backgroundPosition: '-292px -214px',
                         }}
                       />
                       재시도
@@ -650,13 +637,13 @@ export default function SignInPage() {
                         <QRCodeSVG
                           value={`http://localhost:3000/mobile/qr?sessionId=${qrSessionId}`}
                           size={100}
-                          className={`transition-opacity ${qrStatus === "SUCCESS" ? "opacity-20" : ""}`}
-                          level={"M"} // 에러 복원 수준 (M은 표준)
+                          className={`transition-opacity ${qrStatus === 'SUCCESS' ? 'opacity-20' : ''}`}
+                          level={'M'} // 에러 복원 수준 (M은 표준)
                           marginSize={0}
                         />
 
                         {/* 인증 완료 시 오버레이 */}
-                        {qrStatus === "SUCCESS" && (
+                        {qrStatus === 'SUCCESS' && (
                           <div className="absolute inset-0 flex items-center justify-center font-bold text-[#03c75a]">
                             인증 완료!
                           </div>
@@ -689,8 +676,8 @@ export default function SignInPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                            backgroundSize: "336px 330px",
-                            backgroundPosition: "-275px -90px",
+                            backgroundSize: '336px 330px',
+                            backgroundPosition: '-275px -90px',
                           }}
                         />
                         &gt; 렌즈
@@ -699,17 +686,17 @@ export default function SignInPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                            backgroundSize: "336px 330px",
-                            backgroundPosition: "-275px -77px",
+                            backgroundSize: '336px 330px',
+                            backgroundPosition: '-275px -77px',
                           }}
                         />
                         를 눌러 QR코드를 스캔하여
                       </div>
 
                       <div className="mt-[2px] flex items-center justify-center">
-                        보이는 숫자 중{" "}
+                        보이는 숫자 중{' '}
                         <strong className="mx-[4px] text-[15px] font-bold text-[#03c75a]">
-                          {qrAuthNumber || "--"}
+                          {qrAuthNumber || '--'}
                         </strong>
                         를 선택하면 로그인 됩니다.
                         <a
@@ -718,8 +705,8 @@ export default function SignInPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/login/sprite/m_sp_01_login_7b3d4fc3.png")',
-                            backgroundSize: "336px 330px",
-                            backgroundPosition: "-122px -292px",
+                            backgroundSize: '336px 330px',
+                            backgroundPosition: '-122px -292px',
                           }}
                         >
                           <span className="sr-only">도움말</span>
@@ -758,7 +745,7 @@ export default function SignInPage() {
         style={{
           backgroundImage:
             'url("https://ssl.pstatic.net/melona/libs/1378/1378592/5d96432bc60f437ea2a6_20260105120825307.png")',
-          backgroundSize: "contain",
+          backgroundSize: 'contain',
         }}
       >
         {/* 웹 접근성을 위한 숨김 텍스트 */}

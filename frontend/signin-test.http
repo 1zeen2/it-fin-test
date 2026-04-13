@@ -11,3 +11,14 @@ sessionId=746e7864-4dc4-4d5e-acdc-2fe107790ef5&authNumber=40
 ### 일회용 번호 발급 요청 (모바일 앱 역할)
 POST http://localhost:8080/api/auth/disposable
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3NzI3OTc1MzQsImV4cCI6MTc3MjgwMTEzNH0.Gg1hb4tFAmDMCBbZYpKhcJSWpeTngou1G4RUIE6ufXyJqYL7MX-vbDv-CGZ4XB9Fy3vphfVsvLw2Jv5HQVu-uQ
+
+
+# 💡 REST Client 전용 환경 변수 설정 (코드 상단에 작성)
+@clientId = ScU3MDGP2SstvKtzL3Ux
+@clientSecret = pAzDkcOhrU
+@keyword = all
+
+### 네이버 쇼핑 API 검색 테스트
+GET https://openapi.naver.com/v1/search/shop.json?query={{keyword}}
+X-Naver-Client-Id: {{clientId}}
+X-Naver-Client-Secret: {{clientSecret}}

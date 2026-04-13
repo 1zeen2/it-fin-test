@@ -1,3 +1,4 @@
+import Header from "@/app/(main)/_components/Header";
 import React from "react";
 
 export default function MainLayout({
@@ -7,6 +8,7 @@ export default function MainLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <Header />
       <main className="flex w-full flex-1 flex-col">{children}</main>
 
       <footer className="border-t border-gray-100 bg-gray-50 p-[20px] text-center text-[13px] text-gray-500">
