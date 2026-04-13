@@ -1,4 +1,4 @@
-package com.swj.backend.domain.product.category;
+package com.swj.backend.domain.category;
 
 import java.util.List;
 
