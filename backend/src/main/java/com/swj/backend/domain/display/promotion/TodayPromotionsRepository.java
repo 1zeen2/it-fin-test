@@ -10,13 +10,11 @@ import org.springframework.data.repository.query.Param;
 public interface TodayPromotionsRepository extends JpaRepository<TodayPromotions, Long>{
 	
 	@Query("""
-			
-			SELECT tp FROM TodayPromotions tp
-			WHERE tp.isActive = true
-			AND :now BETWEEN tp.startAt AND tp.endAt
-			ORDER BY tp.displayOrder ASC
-			
-			""")
+		SELECT tp FROM TodayPromotions tp
+		WHERE tp.isActive = true
+		AND :now BETWEEN tp.startAt AND tp.endAt
+		ORDER BY tp.displayOrder ASC
+	""")
 	List<TodayPromotions> findActivePromotionsAtCurrentTime(@Param("now") LocalDateTime now);
 	
 }

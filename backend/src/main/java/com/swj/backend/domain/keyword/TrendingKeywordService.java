@@ -1,4 +1,4 @@
-package com.swj.backend.domain.product.keyword;
+package com.swj.backend.domain.keyword;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -146,6 +146,8 @@ public class TrendingKeywordService {
 			
 			if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
 				Map<String, Object> body = response.getBody();
+				
+				log.info("네이버 API 응답 전체 데이터: {}", body);
 				
 				// 상품 총 개수 파싱
 				Integer total = (Integer) body.get("total");

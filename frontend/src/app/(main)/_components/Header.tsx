@@ -1,76 +1,73 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Gnb from "./Gnb";
-import api from "@/lib/axios";
+'use client';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Gnb from './Gnb';
+import api from '@/lib/axios';
+import { useAuth } from '@/feature/auth/AuthContext';
+import Image from 'next/image';
+import UserInfoModal from '@/feature/auth/components/UserInfoModal';
 
 export default function Header() {
   const router = useRouter();
-  const [userName, setUserName] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const { isLoggedIn, logout } = useAuth();
+
+  const [userInfo, setUserInfo] = useState<{
+    loginId: string;
+    name: string;
+    nickname?: string;
+    email?: string;
+    profileImageUrl?: string;
+  } | null>(null);
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const displayName = userInfo?.nickname || userInfo?.name || '회원';
+  const email = userInfo?.email;
+  const profileImageSrc =
+    userInfo?.profileImageUrl ||
+    'https://ssl.pstatic.net/static/common/myarea/myInfo.gif';
 
   useEffect(() => {
-    // 컴포넌트 마운트 시 로컬 스토리지에서 토큰 확인
-    const token = localStorage.getItem("accessToken");
+    if (!isLoggedIn) return;
 
-    if (token) {
-      // 토큰이 있다면 백엔드에 사용자 정보 요청
-      const fetchUserInfo = async () => {
-        try {
-          // 만들어둔 인터셉터로 처리
-          const response = await api.get("/api/users/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+    const fetchUserInfo = async () => {
+      try {
+        const response = await api.get('/api/users/me');
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error('사용자 정보를 불러오는데 실패했습니다.', error);
+      }
+    };
 
-          // UserController가 반환하는 loginId를 상태에 저장
-          setUserName(response.data.loginId);
-        } catch (error) {
-          console.error("사용자 정보를 불러오는데 실패했습니다.", error);
-          // 토큰이 만료되었거나 유효하지 않으면 로컬 스토리지 정리
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          setUserName(null);
-        }
-      };
-
-      fetchUserInfo();
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setUserName(null); // 상태를 초기화해서 로그인 버튼을 바로 출력하는 방식
-    alert("로그아웃 되었습니다.");
-  };
+    fetchUserInfo();
+  }, [isLoggedIn]);
 
   const handleSearch = async () => {
     const trimedQuery = searchQuery.trim();
 
     if (!trimedQuery) {
-      setSearchQuery("");
+      setSearchQuery('');
 
-      router.push("/search");
+      router.push('/search');
       return;
     }
 
     const externalUrl = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(trimedQuery)}`;
-    window.open(externalUrl, "_blank", "noopener,noreferrer");
+    window.open(externalUrl, '_blank', 'noopener,noreferrer');
 
     api
-      .post("/api/v1/trending-keywords/search", {
+      .post('/api/v1/trending-keywords/search', {
         keyword: trimedQuery,
       })
       .catch((error) => {
-        console.error("검색어 카운트 로직 오류: ", error);
+        console.error('검색어 카운트 로직 오류: ', error);
       });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleSearch();
     }
@@ -128,20 +125,94 @@ export default function Header() {
 
           {/* row 1 col 2 */}
           <div className="flex items-center gap-[8px]">
-            {userName ? (
-              /** 로그인 된 상태 => 우선 아이디만 출력 */
-              <div className="mr-[8px] flex items-center gap-[4px]">
-                <span className="text-[13px] font-bold text-[#121212]">
-                  {userName}
-                </span>
-                <span className="text-[12px] text-[#121212]">님</span>
-                {/* 임시 로그아웃 버튼 */}
+            {isLoggedIn ? (
+              <div className="relative flex items-center">
                 <button
-                  onClick={handleLogout}
-                  className="ml-[6px] cursor-pointer rounded-[4px] border border-[#d3dadf] px-[7px] text-[11px] leading-[22px] font-medium text-[#757575] transition-colors hover:bg-[#f5f6f4]"
+                  onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  className="flex cursor-pointer items-center gap-[2px] rounded-full hover:underline"
                 >
-                  로그아웃
+                  <div className="relative h-[28px] w-[28px] overflow-hidden rounded-full border border-black/10">
+                    <Image
+                      src={profileImageSrc}
+                      alt="프로필 이미지"
+                      fill
+                      sizes="28px"
+                      priority
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="max-w-[62px] truncate text-[12px] font-medium text-black">
+                    {displayName}님
+                  </span>
                 </button>
+
+                <svg
+                  width="12px"
+                  height="12px"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-gray-400"
+                >
+                  <path
+                    d="M3 4.5L6 7.5L9 4.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <div className="px-[8px] py-[11px]">
+                  <a
+                    href="https://talks.naver.com/?frm=pcgnb&anchor=&category="
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-[18px] w-[18px] cursor-pointer items-center"
+                    style={{
+                      backgroundImage:
+                        'url(https://shopv.pstatic.net/web/modules/gnb/p/static/20240717_1600/img/sprite/svg/spGlobal_svg.svg)',
+                      backgroundSize: '80px 73px',
+                      backgroundPosition: '-30px -26px',
+                    }}
+                  ></a>
+                </div>
+                <div className="px-[12px] py-[11.5px]">
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-[17px] w-[16px] cursor-pointer items-center"
+                    style={{
+                      backgroundImage:
+                        'url(https://shopv.pstatic.net/web/modules/gnb/p/static/20240717_1600/img/sprite/svg/spGlobal_svg.svg)',
+                      backgroundSize: '80px 73px',
+                      backgroundPosition: '-4px -52px',
+                    }}
+                  ></a>
+                </div>
+                <div className="px-[10px] py-[13px]">
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-[14px] w-[20px] cursor-pointer items-center"
+                    style={{
+                      backgroundImage:
+                        'url(https://shopv.pstatic.net/web/modules/gnb/p/static/20240717_1600/img/sprite/svg/spGlobal_svg.svg)',
+                      backgroundSize: '80px 73px',
+                      backgroundPosition: '-32px -4px',
+                    }}
+                  ></a>
+                </div>
+
+                {isDropdownOpen && (
+                  <UserInfoModal
+                    onClose={() => setIsDropdownOpen(false)}
+                    displayName={displayName}
+                    profileImageSrc={profileImageSrc}
+                    email={email}
+                  />
+                )}
               </div>
             ) : (
               <Link
@@ -157,9 +228,9 @@ export default function Header() {
                 className="h-[14px] w-[14px]"
                 style={{
                   backgroundImage:
-                    "url(https://shopv.pstatic.net/web/modules/gnb/p/static/20240717_1600/img/sprite/svg/spGlobal_svg.svg)",
-                  backgroundSize: "80px 73px",
-                  backgroundPosition: "-28px -52px",
+                    'url(https://shopv.pstatic.net/web/modules/gnb/p/static/20240717_1600/img/sprite/svg/spGlobal_svg.svg)',
+                  backgroundSize: '80px 73px',
+                  backgroundPosition: '-28px -52px',
                 }}
               ></div>
             </button>

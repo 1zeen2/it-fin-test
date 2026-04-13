@@ -1,4 +1,4 @@
-package com.swj.backend.domain.product.keyword;
+package com.swj.backend.domain.keyword;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

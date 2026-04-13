@@ -1,4 +1,4 @@
-package com.swj.backend.domain.product.keyword;
+package com.swj.backend.domain.keyword;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,11 +18,11 @@ public interface TrendingKeywordRepository extends JpaRepository<TrendingKeyword
 	
 	/** 검색어 오타 교정에 필요한 문자열 추출 */
 	@Query("""
-			SELECT tk.normalizedKeyword
-			FROM TrendingKeyword tk
-			WHERE tk.baseDate = :baseDate
-			AND tk.isActive = true
-			""")
+		SELECT tk.normalizedKeyword
+		FROM TrendingKeyword tk
+		WHERE tk.baseDate = :baseDate
+		AND tk.isActive = true
+	""")
 	List<String> findAllNormalizedKeywordsByBaseDate(@Param("baseDate") LocalDate baseDate);
 	
 	/**
