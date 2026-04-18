@@ -90,7 +90,7 @@ export default function BlogCurationSection() {
 
   return (
     <>
-      <section className="flex h-auto w-full flex-col items-center py-[40px]">
+      <section className="flex h-auto w-full flex-col items-center border-b border-[#e8ecef] py-[40px]">
         <div className="flex h-auto w-full max-w-[1280px] flex-col gap-[24px]">
           <div className="flex h-auto flex-col gap-[6px] tracking-[-.5px]">
             <h2 className="text-[24px] leading-[32px] font-bold text-[#000000]">

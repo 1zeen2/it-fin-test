@@ -148,7 +148,7 @@ export default function BlogCurationCard({
                     </span>
                   )}
 
-                <div className="flex items-center leading-[24px]">
+                <div className="flex items-center gap-[3px] leading-[24px]">
                   {/* 할인율 */}
                   {discountRate && (
                     <strong className="text-[15px] font-bold text-[#d40022]">
