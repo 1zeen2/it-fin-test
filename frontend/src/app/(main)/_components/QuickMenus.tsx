@@ -14,7 +14,7 @@ interface category {
   isActive: boolean;
 }
 
-export default function Lnb() {
+export default function QuickMenus() {
   const [categories, setCategories] = useState<category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

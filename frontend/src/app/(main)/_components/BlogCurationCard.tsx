@@ -136,14 +136,14 @@ export default function BlogCurationCard({
               </div>
 
               <div className="flex flex-col justify-center">
-                <span className="line-clamp-1 text-[14px] text-[#121212]">
+                <span className="mb-[2px] line-clamp-1 text-[14px] text-[#121212]">
                   {product.title}
                 </span>
 
                 {/* 원래 가격 (할인이 있을 때만 표시) */}
                 {product.originalPrice &&
                   product.originalPrice > product.price && (
-                    <span className="mt-[4px] text-[12px] text-[#949494] line-through">
+                    <span className="text-[12px] text-[#949494] line-through">
                       {product.originalPrice.toLocaleString()}원
                     </span>
                   )}
@@ -155,7 +155,7 @@ export default function BlogCurationCard({
                       {discountRate}%
                     </strong>
                   )}
-                  <strong className="mt-[4px] text-[18px] text-[#121212]">
+                  <strong className="text-[18px] text-[#121212]">
                     {product.price.toLocaleString()}
                     <span className="shrink-0 text-[15px] font-medium">원</span>
                   </strong>

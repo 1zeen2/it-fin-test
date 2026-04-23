@@ -2,17 +2,15 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLoginAlertModal } from '../LoginAlertModalContext';
 
-interface LoginModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginAlertModal() {
   const router = useRouter();
 
+  const { isModalOpen, closeLoginAlertModal } = useLoginAlertModal();
+
   useEffect(() => {
-    if (isOpen) {
+    if (isModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -21,14 +19,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isModalOpen]);
 
-  if (!isOpen) return null;
+  if (!isModalOpen) return null;
 
   return (
     // 배경 오버레이
     <div
-      onClick={onClose}
+      onClick={closeLoginAlertModal}
       className="fixed inset-0 z-20 flex items-center justify-center bg-black/70"
     >
       {/* 모달 박스 */}
@@ -49,7 +47,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <div className="flex w-full border-t border-[#e8ecef99] text-[13px] leading-[50px] tracking-[-.065px]">
           <button
             onClick={() => {
-              onClose();
+              closeLoginAlertModal();
               router.push('/login');
             }}
             className="flex-1 cursor-pointer border-r border-[#e8ecef99] font-bold text-[#7346f3]"
@@ -59,7 +57,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           {/* 세로 구분선 */}
 
           <button
-            onClick={onClose}
+            onClick={closeLoginAlertModal}
             className="flex-1 cursor-pointer text-[#121212]"
           >
             닫기

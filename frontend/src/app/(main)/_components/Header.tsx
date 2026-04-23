@@ -6,7 +6,7 @@ import Gnb from './Gnb';
 import api from '@/lib/axios';
 import { useAuth } from '@/feature/auth/AuthContext';
 import Image from 'next/image';
-import UserInfoModal from '@/feature/auth/components/UserInfoModal';
+import UserInfoModal from '@/feature/auth/modal/UserInfoModal';
 
 export default function Header() {
   const router = useRouter();
