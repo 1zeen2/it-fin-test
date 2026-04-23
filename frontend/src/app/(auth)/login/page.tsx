@@ -149,7 +149,7 @@ export default function SignInPage() {
         eventSourceRef.current = null;
       }
     };
-  }, [activeTab, qrRefreshKey, router]); // 재시도 클릭 시 useEffect가 다시 돌아야 함
+  }, [activeTab, qrRefreshKey, router, login]); // 재시도 클릭 시 useEffect가 다시 돌아야 함
 
   // 로그인 상태 유지 및 IP 보안 토글
   const toggleCheck = () => setIsChecked(!isChecked);

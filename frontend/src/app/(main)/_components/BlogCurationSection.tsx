@@ -5,34 +5,15 @@ import api from '@/lib/axios';
 import LoginAlertModal from '@/feature/auth/components/LoginAlertModal';
 import { useAuth } from '@/feature/auth/AuthContext';
 import BlogCurationCard from './BlogCurationCard';
+import { BlogCuration } from '@/types/product';
 
-export interface CurationProduct {
-  productId: number;
-  title: string;
-  originalPrice: number | null;
-  price: number;
-  imageUrl: string;
-  linkUrl: string;
-  displayOrder: number;
-  shippingFee: number;
-}
-
-export interface BlogCuration {
-  curationId: number;
-  blogName: string;
-  author: string;
-  postTitle: string;
-  postThumbnailUrl: string;
-  blogUrl: string;
-  products: CurationProduct[];
-}
+const itemsPerPage = 2;
 
 export default function BlogCurationSection() {
   const [curations, setCurations] = useState<BlogCuration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
   const totalPages = Math.max(1, Math.ceil(curations.length / itemsPerPage));
 
   const [wishList, setWishList] = useState<number[]>([]);
@@ -40,10 +21,11 @@ export default function BlogCurationSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isLoggedIn } = useAuth();
 
+  // 서버에서 데이터를 받아오는 훅
   useEffect(() => {
     const fetchCurations = async () => {
       try {
-        const response = await api.get('/api/blogs/curations');
+        const response = await api.get('/api/display/blog-curations');
 
         setCurations(response.data);
       } catch (error) {
@@ -55,6 +37,28 @@ export default function BlogCurationSection() {
 
     fetchCurations();
   }, []);
+
+  // 페이지네이션 이미지를 미리 다운로드 받는 훅
+  useEffect(() => {
+    if (curations.length > 0) {
+      const nextPageIndex = currentPage === totalPages ? 1 : currentPage + 1;
+      const nextStartIndex = (nextPageIndex - 1) * itemsPerPage;
+      const nextCurations = curations.slice(
+        nextStartIndex,
+        nextStartIndex + itemsPerPage,
+      );
+
+      nextCurations.forEach((curation) => {
+        const thumbnailImg = new Image();
+        thumbnailImg.src = curation.postThumbnailUrl;
+
+        curation.products.forEach((product) => {
+          const productImg = new Image();
+          productImg.src = product.imageUrl;
+        });
+      });
+    }
+  }, [currentPage, curations, totalPages]);
 
   const handleWishClick = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -74,14 +78,6 @@ export default function BlogCurationSection() {
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[400px] items-center justify-center">
-        데이터를 불러오는 중입니다...
-      </div>
-    );
-  }
-
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentCurations = curations.slice(
     startIndex,
@@ -91,22 +87,22 @@ export default function BlogCurationSection() {
   return (
     <>
       <section className="flex h-auto w-full flex-col items-center border-b border-[#e8ecef] py-[40px]">
-        <div className="flex h-auto w-full max-w-[1280px] flex-col gap-[24px]">
+        <div className="flex h-auto w-full max-w-[1280px] flex-col gap-[23px]">
           <div className="flex h-auto flex-col gap-[6px] tracking-[-.5px]">
             <h2 className="text-[24px] leading-[32px] font-bold text-[#000000]">
               인기 <span className="text-[#7346f3]">패션</span> 블로그와 함께
               찾는 상품
             </h2>
             <p className="text-[15px] leading-[20px] font-normal text-[#757575]">
-              최근 7일간 <span className="mr-[5px] text-[#121212]">패션</span>
+              최근 7일간 <span className="mr-[5.5px] text-[#121212]">패션</span>
               분야 클릭 많은 블로그
             </p>
           </div>
 
           <div className="grid w-full grid-cols-1 gap-[14px] md:grid-cols-2">
-            {currentCurations.map((curation) => (
+            {currentCurations.map((curation, index) => (
               <BlogCurationCard
-                key={curation.curationId}
+                key={index}
                 curation={curation}
                 wishList={wishList}
                 onWishClick={handleWishClick}
@@ -114,26 +110,48 @@ export default function BlogCurationSection() {
             ))}
           </div>
 
-          <div className="mt-[16px] flex w-full items-center justify-center gap-[12px]">
+          <div className="mt-[1px] flex w-full items-center justify-center">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="flex h-[36px] w-[36px] items-center justify-center rounded-[4px] border border-[#d3dadf] bg-white text-[#121212] transition-colors hover:bg-[#f5f6f4]"
+              onClick={() =>
+                setCurrentPage((prev) => (prev === 1 ? totalPages : prev - 1))
+              }
+              disabled={isLoading}
+              className="flex items-center justify-center rounded-[8px] border border-[#d3dadf] bg-white px-[31px] py-[10.5px] text-[#121212] transition-colors hover:bg-[#f5f6f4]"
             >
-              &lt;
+              <svg
+                width="16"
+                height="17"
+                viewBox="0 0 16 17"
+                fill="none"
+                className="rotate-180"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M5.667 13.5l5-5-5-5"
+                ></path>
+              </svg>
             </button>
-            <span className="text-[14px] font-medium text-[#121212]">
+            <span className="px-[44px] text-[16px] font-bold text-[#121212]">
               {currentPage}{' '}
-              <span className="text-[#949494]">/ {totalPages}</span>
+              <span className="font-medium text-[#949494]">/ {totalPages}</span>
             </span>
             <button
               onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                setCurrentPage((prev) => (prev === totalPages ? 1 : prev + 1))
               }
-              disabled={currentPage === totalPages}
-              className="flex h-[36px] w-[36px] items-center justify-center rounded-[4px] border border-[#d3dadf] bg-white text-[#121212] transition-colors hover:bg-[#f5f6f4]"
+              disabled={isLoading}
+              className="flex items-center justify-center rounded-[8px] border border-[#d3dadf] bg-white px-[31px] py-[10.5px] text-[#121212] transition-colors hover:bg-[#f5f6f4]"
             >
-              &gt;
+              <svg width="16" height="17" viewBox="0 0 16 17" fill="none">
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M5.667 13.5l5-5-5-5"
+                ></path>
+              </svg>
             </button>
           </div>
         </div>

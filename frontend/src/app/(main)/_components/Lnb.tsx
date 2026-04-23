@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import api from "@/lib/axios";
-import Image from "next/image";
+import { useState, useEffect } from 'react';
+import api from '@/lib/axios';
+import Image from 'next/image';
 
 // 타입 정의 (interface)
 interface category {
@@ -21,11 +21,11 @@ export default function Lnb() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await api.get("/api/product/categories");
+        const response = await api.get('/api/display/quick-menus');
 
         setCategories(response.data);
       } catch (error) {
-        console.error("카테고리 로딩 실패:", error);
+        console.error('카테고리 로딩 실패:', error);
       } finally {
         setIsLoading(false);
       }

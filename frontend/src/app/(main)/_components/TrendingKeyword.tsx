@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import api from "@/lib/axios";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import api from '@/lib/axios';
 
 interface TrendingKeyword {
   id: number;
@@ -26,10 +26,10 @@ export default function TrendingKeyword() {
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
-        const response = await api.get("/api/v1/trending-keywords");
+        const response = await api.get('/api/display/trending-keywords');
         setKeyword(response.data);
       } catch (error) {
-        console.error("어제 네이버 급상승 쇼핑 키워드 로딩 실패");
+        console.error('어제 네이버 급상승 쇼핑 키워드 로딩 실패');
       } finally {
         setIsLoading(false);
       }

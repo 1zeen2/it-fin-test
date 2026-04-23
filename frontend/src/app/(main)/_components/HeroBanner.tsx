@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import api from "@/lib/axios";
-import Image from "next/image";
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import api from '@/lib/axios';
+import Image from 'next/image';
 
 // 타입 정의 (interface)
 interface ProductImage {
@@ -11,7 +11,7 @@ interface ProductImage {
   fallback: string;
 }
 
-interface HeroBannerItem {
+interface HeroBanner {
   id: number;
   title: string; // SEO alt 텍스트
   linkUrl: string;
@@ -25,7 +25,7 @@ interface HeroBannerItem {
 }
 
 export default function HeroBanner() {
-  const [banners, setBanners] = useState<HeroBannerItem[]>([]);
+  const [banners, setBanners] = useState<HeroBanner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -40,11 +40,11 @@ export default function HeroBanner() {
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const response = await api.get("/api/v1/hero-banners");
+        const response = await api.get('/api/display/hero-banners');
         setBanners(response.data);
         setCurrentIndex(response.data.length);
       } catch (error) {
-        console.error("Fetch Error:", error);
+        console.error('Fetch Error:', error);
       } finally {
         setIsLoading(false);
       }
@@ -92,7 +92,7 @@ export default function HeroBanner() {
 
   // 배너 위치 계산
   const getTranslateX = () => {
-    if (typeof window === "undefined" || banners.length === 0) return 0;
+    if (typeof window === 'undefined' || banners.length === 0) return 0;
 
     // 배너 정 중앙 위치
     const centerOffset = (window.innerWidth - BANNER_WIDTH) / 2;
@@ -128,7 +128,7 @@ export default function HeroBanner() {
     <div className="relative flex w-full flex-col overflow-hidden pt-[20px] pb-[10px]">
       {/* 슬라이드 영역 */}
       <div
-        className={`flex ease-out ${isTransitioning ? "transition-transform duration-500" : "transition-none"}`}
+        className={`flex ease-out ${isTransitioning ? 'transition-transform duration-500' : 'transition-none'}`}
         style={{
           transform: `translateX(${getTranslateX()}px)`,
           gap: `${BANNER_GAP}px`,
@@ -143,7 +143,7 @@ export default function HeroBanner() {
             <Link href={item.linkUrl} className="relative block h-full w-full">
               {/* 이미지, 텍스트 렌더링 로직 */}
               <Image
-                src={item.bgImageFallback}
+                src={item.bgImageWebp}
                 alt={item.title}
                 fill
                 priority={idx === banners.length}
@@ -152,10 +152,10 @@ export default function HeroBanner() {
               />
 
               <div className="absolute inset-0 z-10 flex h-auto flex-col justify-center px-[26px]">
-                {item.titleImageWebp && item.titleImageFallback ? (
+                {item.titleImageWebp ? (
                   <div className="mb-[4px] block w-[320px]">
                     <Image
-                      src={item.titleImageFallback}
+                      src={item.titleImageWebp}
                       alt={item.mainText || item.title}
                       width={320}
                       height={80}

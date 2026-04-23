@@ -1,4 +1,4 @@
-package com.swj.backend.domain.category;
+package com.swj.backend.domain.display.quickmenu;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,10 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "product_categories")
+@Table(name = "quick_menus")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductCategory {
+public class QuickMenu {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +26,11 @@ public class ProductCategory {
 	@Column(nullable = false)
 	private String imageUrl;
 	
+	@Column(nullable = false, length = 1000)
+	private String linkUrl;
+	
 	@Column(nullable = false, length = 50)
-	private String categoryCode;
+	private String menuCode;
 	
 	@Column
 	private Integer displayOrder;

@@ -30,14 +30,8 @@ public class HeroBanner {
     @Column(nullable = false, length = 500)
     private String bgImageWebp;
 
-    @Column(nullable = false, length = 500)
-    private String bgImageFallback;
-
     @Column(length = 500)
     private String titleImageWebp;
-
-    @Column(length = 500)
-    private String titleImageFallback;
 
     @Column(length = 100)
     private String mainText;

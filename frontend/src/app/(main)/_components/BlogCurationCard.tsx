@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import type { BlogCuration } from './BlogCurationSection';
+import type { BlogCuration } from '@/types/product';
 
 interface BlogCurationCardProps {
   curation: BlogCuration;
@@ -18,7 +18,7 @@ export default function BlogCurationCard({
   onWishClick,
 }: BlogCurationCardProps) {
   return (
-    <div className="flex flex-col overflow-hidden rounded-[8px] border border-[#e8ecef] bg-white">
+    <div className="flex flex-col overflow-hidden rounded-[8px] ring-1 ring-[#e8ecef] ring-inset">
       <a
         href={curation.blogUrl}
         className="relative flex h-auto w-full flex-col justify-between gap-[6px] overflow-hidden rounded-t-[8px] px-[30px] pt-[36px] pb-[30px] text-white"
@@ -135,7 +135,7 @@ export default function BlogCurationCard({
                 </button>
               </div>
 
-              <div className="flex flex-col justify-center gap-[4px]">
+              <div className="flex flex-col justify-center">
                 <span className="line-clamp-1 text-[14px] text-[#121212]">
                   {product.title}
                 </span>
@@ -143,7 +143,7 @@ export default function BlogCurationCard({
                 {/* 원래 가격 (할인이 있을 때만 표시) */}
                 {product.originalPrice &&
                   product.originalPrice > product.price && (
-                    <span className="text-[12px] text-[#949494] line-through">
+                    <span className="mt-[4px] text-[12px] text-[#949494] line-through">
                       {product.originalPrice.toLocaleString()}원
                     </span>
                   )}
@@ -155,7 +155,7 @@ export default function BlogCurationCard({
                       {discountRate}%
                     </strong>
                   )}
-                  <strong className="text-[18px] text-[#121212]">
+                  <strong className="mt-[4px] text-[18px] text-[#121212]">
                     {product.price.toLocaleString()}
                     <span className="shrink-0 text-[15px] font-medium">원</span>
                   </strong>

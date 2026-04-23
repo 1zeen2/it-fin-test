@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import api from "@/lib/axios";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import api from '@/lib/axios';
 
 interface TodayPromotions {
   id: number;
@@ -22,11 +22,11 @@ export default function TodayPromotions() {
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const response = await api.get("/api/v1/today-promotions");
+        const response = await api.get('/api/display/today-promotions');
 
         setPromotions(response.data);
       } catch (error) {
-        console.error("오늘의 이벤트 로딩 실패", error);
+        console.error('오늘의 이벤트 로딩 실패', error);
       } finally {
         setIsLoading(false);
       }

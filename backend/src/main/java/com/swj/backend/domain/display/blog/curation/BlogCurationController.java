@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/blogs/curations")
+@RequestMapping("/api/display/blog-curations")
 @RequiredArgsConstructor
 public class BlogCurationController {
 	
@@ -21,7 +21,7 @@ public class BlogCurationController {
 	/** 블로그 큐레이션 목록 조회 */
 	@GetMapping
 	public ResponseEntity<List<BlogCurationResponseDto>> getActiveCurations() {
-		log.info("[GET /api/blogs/curations 목록 조회 요청 수신");
+		log.info("GET /api/blogs/curations 목록 조회 요청 수신");
 		
 		List<BlogCurationResponseDto> response = blogCurationService.getActiveCurations();
 		
