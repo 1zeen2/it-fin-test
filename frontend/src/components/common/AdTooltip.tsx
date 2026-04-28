@@ -28,24 +28,22 @@ export default function AdTooltip() {
     };
   }, [isTooltipOpen]);
 
-  useEffect(() => {
-    if (isTooltipOpen && containerRef.current && tooltipRef.current) {
-      const buttonRect = containerRef.current.getBoundingClientRect();
-      const tooltipHeight = tooltipRef.current.offsetHeight;
-      const spaceBelow = window.innerHeight - buttonRect.bottom;
+  const handleToggleTooltip = () => {
+    if (!isTooltipOpen && containerRef.current) {
+      const bottonRect = containerRef.current.getBoundingClientRect();
 
-      if (spaceBelow < tooltipHeight + 10) {
-        setPosition('top');
-      } else {
-        setPosition('bottom');
-      }
+      const spaceBelow = window.innerHeight - bottonRect.bottom;
+
+      setPosition(spaceBelow < 150 ? 'top' : 'bottom');
     }
-  }, [isTooltipOpen]);
+
+    setIsTooltipOpen((prev) => !prev);
+  };
 
   return (
     <div ref={containerRef} className="relative inline-flex items-center">
       <button
-        onClick={() => setIsTooltipOpen((prev) => !prev)}
+        onClick={handleToggleTooltip}
         className="w-[30px] cursor-pointer rounded-[6px] border border-[#e6e6ea] bg-white text-center"
       >
         <span className="text-[13px] leading-[18px] font-semibold text-[#2a2a2c]">
