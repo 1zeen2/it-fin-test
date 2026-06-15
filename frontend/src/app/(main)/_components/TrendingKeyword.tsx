@@ -80,9 +80,10 @@ export default function TrendingKeyword() {
                     alt={item.keyword}
                     fill
                     sizes="20vW, 243px"
+                    unoptimized={true}
                     className="object-cover transition-transform duration-250 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.0.15)_0%,rgba(0,0,0,0.05)_50%,rgba(0,0,0,0)_100%)]" />
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.15)_0%,rgba(0,0,0,0.05)_50%,rgba(0,0,0,0)_100%)]" />
                   <div className="pointer-events-none absolute inset-0 z-10 bg-black/6 transition-colors duration-250"></div>
 
                   <div className="absolute bottom-[6px] left-[16px] z-20 h-[64px]">

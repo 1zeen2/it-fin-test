@@ -16,9 +16,7 @@ interface HeroBanner {
   title: string; // SEO alt 텍스트
   linkUrl: string;
   bgImageWebp: string;
-  bgImageFallback: string;
   titleImageWebp: string | null;
-  titleImageFallback: string | null;
   mainText: string | null;
   subText: string | null;
   productsJson: ProductImage[]; // @JsonRawValue에서 rawJSON으로 저장헤서 문자열이 아니라 배열로 바로 들어옴
@@ -146,7 +144,7 @@ export default function HeroBanner() {
                 src={item.bgImageWebp}
                 alt={item.title}
                 fill
-                priority={idx === banners.length}
+                priority
                 sizes="540px"
                 className="rounded-[12px] object-cover"
               />
@@ -159,8 +157,8 @@ export default function HeroBanner() {
                       alt={item.mainText || item.title}
                       width={320}
                       height={80}
-                      sizes="320px"
-                      className="mb-[16px] h-auto w-full object-contain"
+                      priority
+                      className="mb-[16px] object-contain"
                     />
                     <p className="h-auto text-[18px] font-medium text-white">
                       {item.subText}
@@ -188,6 +186,7 @@ export default function HeroBanner() {
                           alt="상품 썸네일"
                           fill
                           sizes="86px"
+                          unoptimized={true}
                           className="object-cover"
                         />
                       </div>
@@ -222,9 +221,9 @@ export default function HeroBanner() {
             >
               <path
                 stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M5.667 13l5-5-5-5"
               ></path>
             </svg>
@@ -241,9 +240,9 @@ export default function HeroBanner() {
             <svg viewBox="0 0 16 16" className="h-[16px] w-[16px] fill-none">
               <path
                 stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M5.667 13l5-5-5-5"
               ></path>
             </svg>

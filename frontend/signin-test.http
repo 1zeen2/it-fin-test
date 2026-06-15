@@ -22,3 +22,13 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0ZXJJRDIiLCJpYXQiOjE3N
 GET https://openapi.naver.com/v1/search/shop.json?query={{keyword}}
 X-Naver-Client-Id: {{clientId}}
 X-Naver-Client-Secret: {{clientSecret}}
+
+# 💡 REST Client 전용 환경 변수 설정
+@clientId = ScU3MDGP2SstvKtzL3Ux
+@clientSecret = pAzDkcOhrU
+@keyword = 출산 육아용품
+
+### 네이버 쇼핑 API 검색 테스트
+GET https://openapi.naver.com/v1/search/shop.json?query=스위스밀리터리 튼튼한 캐리어 75cm(28인치) 71cm(26인치) 65cm(24인치)&display=1
+X-Naver-Client-Id: {{clientId}}
+X-Naver-Client-Secret: {{clientSecret}}

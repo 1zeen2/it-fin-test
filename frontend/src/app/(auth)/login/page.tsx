@@ -8,6 +8,7 @@ import { useAuth } from '@/feature/auth/AuthContext';
 import api from '@/lib/axios';
 import axios from 'axios';
 import { log } from 'console';
+import Link from 'next/link';
 
 const TABS = [
   {
@@ -204,8 +205,13 @@ export default function SignInPage() {
     <div className="flex min-h-screen w-full flex-col">
       {/* Header */}
       <div className="flex h-auto w-full flex-col items-center justify-end pt-[125px] pb-[48px]">
-        <h1 className="text-[40px] font-normal tracking-[0.4px] text-[#03c75a]">
-          로그인 화면
+        <h1>
+          <Link
+            href="/"
+            className="text-[40px] font-normal tracking-[0.4px] text-[#03c75a]"
+          >
+            로그인 화면
+          </Link>
         </h1>
       </div>
 
