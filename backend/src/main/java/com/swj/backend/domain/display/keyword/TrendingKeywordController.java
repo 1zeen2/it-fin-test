@@ -1,4 +1,4 @@
-package com.swj.backend.domain.keyword;
+package com.swj.backend.domain.display.keyword;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/trending-keywords")
+@RequestMapping("/api/display/trending-keywords")
 @RequiredArgsConstructor
 public class TrendingKeywordController {
 	

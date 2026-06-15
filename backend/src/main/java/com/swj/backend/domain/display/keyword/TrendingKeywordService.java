@@ -1,4 +1,4 @@
-package com.swj.backend.domain.keyword;
+package com.swj.backend.domain.display.keyword;
 
 import java.net.URI;
 import java.net.URLEncoder;
