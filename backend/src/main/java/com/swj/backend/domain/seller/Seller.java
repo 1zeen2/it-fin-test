@@ -1,6 +1,7 @@
 package com.swj.backend.domain.seller;
 
 import com.swj.backend.domain.user.User;
+import com.swj.backend.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "sellers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Seller {
+public class Seller extends BaseTimeEntity {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

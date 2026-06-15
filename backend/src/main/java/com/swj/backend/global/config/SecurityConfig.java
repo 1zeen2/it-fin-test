@@ -47,7 +47,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // "/api/auth/" 하위 경로는 모두 허용
                 .requestMatchers("/api/display/**").permitAll() // 배너, 네비바 등
-                .requestMatchers("/api/product/**").permitAll() // 상품 카테고리 출력
+                .requestMatchers("/api/products/**").permitAll() // 상품 카테고리 출력
                 
                 .anyRequest().authenticated()) // 그 외 모든 요청은 token 필요
             
