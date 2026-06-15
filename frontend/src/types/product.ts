@@ -1,5 +1,5 @@
 export interface Product {
-  productId: number;
+  id: number;
   title: string;
   originalPrice: number | null;
   price: number;
@@ -7,12 +7,14 @@ export interface Product {
   shippingType: 'FREE' | 'PAID' | 'PAY_ON_DELIVERY' | 'CONDITIONAL';
   imageUrl: string;
   linkUrl: string;
+  tag: string;
+  category1: string;
   isActive: boolean;
 }
 
 export type BlogCurationProduct = Pick<
   Product,
-  | 'productId'
+  | 'id'
   | 'title'
   | 'originalPrice'
   | 'price'
@@ -33,7 +35,7 @@ export interface BlogCuration {
 
 export type RecommendProduct = Pick<
   Product,
-  | 'productId'
+  | 'id'
   | 'title'
   | 'originalPrice'
   | 'price'
@@ -41,4 +43,5 @@ export type RecommendProduct = Pick<
   | 'linkUrl'
   | 'shippingFee'
   | 'shippingType'
+  | 'category1'
 > & { isWished: boolean };

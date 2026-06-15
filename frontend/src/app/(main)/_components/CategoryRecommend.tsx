@@ -1,17 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import LoginAlertModal from '@/feature/auth/modal/GlobalLoginAlertModal';
+import { useLoginAlertModal } from '@/feature/auth/LoginAlertModalContext';
 import { useAuth } from '@/feature/auth/AuthContext';
 import type { RecommendProduct } from '@/types/product';
 import AdTooltip from '@/components/common/AdTooltip';
+import api from '@/lib/axios';
 
 const CATEGORIES = [
+  '출산/육아',
   '화장품/미용',
   '스포츠/레저',
   '디지털/가전',
-  '출산/육아',
   '생활/건강',
   '식품',
   '패션의류',
@@ -19,34 +20,34 @@ const CATEGORIES = [
   '가구/인테리어',
 ];
 
-const MOCK_PRODUCTS: Record<string, RecommendProduct[]> = CATEGORIES.reduce(
-  (acc, category, idx) => {
-    acc[category] = Array.from({ length: 12 }).map((_, i) => ({
-      productId: idx * 1000 + i + 1,
-      title:
-        '메디필 EGF 스케일링 모이스처 풋 크림 130g 유리아 우레아 보습크림 각질용해제',
-      originalPrice: 50000 + i * 2000,
-      price: 35000 + i * 1500,
-      shippingFee: i % 4 === 0 ? 3000 : 0, // 4개마다 배송비 부과
-      shippingType: 'PAID',
-      imageUrl: `https://picsum.photos/seed/${idx * 1000 + i}/400/400`, // 임시 랜덤 이미지
-      linkUrl: '#',
-      isActive: true,
-      isWished: false,
-    }));
-    return acc;
-  },
-  {} as Record<string, RecommendProduct[]>,
-);
-
 export default function CategoryRecommend() {
   const [currentCategoryIdx, setCurrentCategoryIdx] = useState(0);
-  const [wishList, setWishList] = useState<number[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { isLoggedIn } = useAuth();
-
+  const { openLoginAlertModal } = useLoginAlertModal();
+  const [wishList, setWishList] = useState<number[]>([]);
+  const [products, setProducts] = useState<RecommendProduct[]>([]);
   const currentCategory = CATEGORIES[currentCategoryIdx];
-  const currentProducts = MOCK_PRODUCTS[currentCategory] || [];
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await api.get('/api/products', {
+          params: {
+            category1: currentCategory,
+          },
+        });
+
+        setProducts(response.data);
+      } catch (error) {
+        console.error('API 호출 에러: ', error);
+      }
+    };
+    fetchProducts();
+  }, [currentCategory]);
+
+  const filteredProducts = products.filter(
+    (product) => product.category1 === currentCategory,
+  );
 
   const handleWishClick = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -54,8 +55,8 @@ export default function CategoryRecommend() {
   ) => {
     e.preventDefault();
 
-    if (isLoggedIn) {
-      setIsModalOpen(true);
+    if (!isLoggedIn) {
+      openLoginAlertModal();
       return;
     }
 
@@ -80,7 +81,7 @@ export default function CategoryRecommend() {
 
   return (
     <section className="flex w-full flex-col items-center border-b border-[#e8ecef] py-[40px]">
-      <div className="flex w-full max-w-[1280px] flex-col gap-[16px]">
+      <div className="flex w-full max-w-[1280px] flex-col gap-[16px] md:min-h-[794px]">
         {/* 섹션 타이틀 */}
         <h2 className="text-[24px] leading-[32px] font-bold text-[#121212]">
           <span className="text-[#7346f3]">{currentCategory}</span> 상품
@@ -104,9 +105,9 @@ export default function CategoryRecommend() {
         </div>
 
         {/* 상품 목록 */}
-        <div className="mt-[4px] grid w-full grid-cols-2 gap-x-[16px] gap-y-[20px] md:grid-cols-4 lg:grid-cols-6">
-          {currentProducts.map((product) => {
-            const isWished = wishList.includes(product.productId);
+        <div className="mt-[4px] grid w-full grid-cols-2 gap-x-[16px] gap-y-[20px] md:min-h-[622px] md:grid-cols-4 lg:grid-cols-6">
+          {filteredProducts.map((product) => {
+            const isWished = wishList.includes(product.id);
             const discountRate =
               product.originalPrice && product.originalPrice > product.price
                 ? Math.round(
@@ -118,7 +119,7 @@ export default function CategoryRecommend() {
 
             return (
               <a
-                key={product.productId}
+                key={product.id}
                 href={product.linkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -135,7 +136,7 @@ export default function CategoryRecommend() {
                   />
 
                   <button
-                    onClick={(e) => handleWishClick(e, product.productId)}
+                    onClick={(e) => handleWishClick(e, product.id)}
                     className="absolute right-[4px] bottom-[4px] z-10 flex h-[32px] w-[32px] items-center justify-center"
                   >
                     <div

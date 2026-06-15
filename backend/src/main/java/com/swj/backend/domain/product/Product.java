@@ -1,9 +1,12 @@
 package com.swj.backend.domain.product;
 
 import com.swj.backend.domain.seller.Seller;
+import com.swj.backend.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "products")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Product {
+public class Product extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,12 +47,16 @@ public class Product {
 	@Column(nullable = false)
 	private int shippingFee;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ShippingType shippingType;
+	
 	@Column(length = 1000)
 	private String imageUrl;
 	
 	@Column(length = 1000)
 	private String linkUrl;
-	
+		
 	@Column(length = 100)
 	private String brand;
 	
@@ -76,6 +83,7 @@ public class Product {
 			Integer originalPrice,
 			int price,
 			int shippingFee,
+			ShippingType shippingType,
             String imageUrl,
             String linkUrl,
             String brand, 
@@ -90,6 +98,7 @@ public class Product {
         this.originalPrice = originalPrice;
         this.price = Math.max(price, 0); // 가격이 음수면 0으로 설정
         this.shippingFee = Math.max(shippingFee, 0); // 배송비가 0이면 0으로 설정
+        this.shippingType = shippingType != null ? shippingType : ShippingType.PAID;
         this.imageUrl = imageUrl;
         this.linkUrl = linkUrl;
         this.brand = brand;

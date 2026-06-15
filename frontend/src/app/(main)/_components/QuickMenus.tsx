@@ -5,57 +5,56 @@ import api from '@/lib/axios';
 import Image from 'next/image';
 
 // 타입 정의 (interface)
-interface category {
+interface Menu {
   id: number;
-  name: string; // SEO alt 텍스트
+  name: string;
   imageUrl: string;
-  categoryCode: string;
+  menuCode: string;
   displayOrder: number | null;
   isActive: boolean;
 }
 
 export default function QuickMenus() {
-  const [categories, setCategories] = useState<category[]>([]);
+  const [menus, setMenus] = useState<Menu[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchMenus = async () => {
       try {
         const response = await api.get('/api/display/quick-menus');
 
-        setCategories(response.data);
+        setMenus(response.data);
       } catch (error) {
-        console.error('카테고리 로딩 실패:', error);
+        console.error('퀵 메뉴 로딩 실패:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchMenus();
   }, []);
 
   return (
     <div className="flex h-auto w-full flex-row items-center justify-center border-b border-[#e8ecef] pb-[39px]">
       <nav className="flex h-auto w-[1280px] flex-row justify-between overflow-x-auto [&::-webkit-scrollbar]:hidden">
-        {categories.map((category) => (
+        {menus.map((menu) => (
           <div
-            key={category.categoryCode}
+            key={menu.id}
             className="flex shrink-0 cursor-pointer flex-col items-center gap-2"
-            onClick={() =>
-              console.log(`Category Selected: ${category.categoryCode}`)
-            }
+            onClick={() => console.log(`Menu Selected: ${menu.menuCode}`)}
           >
             <div className="relative h-[64px] w-[64px]">
               <Image
-                src={category.imageUrl}
-                alt={category.name}
+                src={menu.imageUrl}
+                alt={menu.name}
                 fill
                 sizes="64px"
+                unoptimized={true}
                 className="rounded-[24px] object-cover"
               />
             </div>
             <span className="text-[14px] leading-[17px] text-[#757575]">
-              {category.name}
+              {menu.name}
             </span>
           </div>
         ))}
