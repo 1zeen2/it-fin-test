@@ -1,6 +1,7 @@
-import SuperPriceClient, { SuperPriceProduct } from './SuperPriceClient';
+import SuperPriceClient from './SuperPriceClient';
+import { SuperPriceProduct } from '@/types/promotions';
 
-async function getSuperPriceProducts(): Promise<SuperPriceProduct[]> {
+async function getSuperPrice(): Promise<SuperPriceProduct[]> {
   try {
     const res = await fetch('http://localhost:8080/api/display/super-prices', {
       cache: 'no-store',
@@ -18,7 +19,7 @@ async function getSuperPriceProducts(): Promise<SuperPriceProduct[]> {
 }
 
 export default async function SuperPrice() {
-  const products = await getSuperPriceProducts();
+  const products = await getSuperPrice();
 
   return <SuperPriceClient initialProducts={products} />;
 }
