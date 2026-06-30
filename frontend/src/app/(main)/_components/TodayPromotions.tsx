@@ -4,16 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import api from '@/lib/axios';
-
-interface TodayPromotions {
-  id: number;
-  title: string;
-  imageUrl: string;
-  badgeText?: string;
-  badgeBgColor?: string;
-  highlightText?: string;
-  linkUrl: string;
-}
+import type { TodayPromotions } from '@/types/promotions';
 
 export default function TodayPromotions() {
   const [promotions, setPromotions] = useState<TodayPromotions[]>([]);
@@ -23,7 +14,6 @@ export default function TodayPromotions() {
     const fetchPromotions = async () => {
       try {
         const response = await api.get('/api/display/today-promotions');
-
         setPromotions(response.data);
       } catch (error) {
         console.error('오늘의 이벤트 로딩 실패', error);
@@ -49,7 +39,7 @@ export default function TodayPromotions() {
 
   return (
     <div className="flex h-auto w-full items-center justify-center border-b border-[#e8ecef] pt-[29px] pb-[41px]">
-      <div className="flex h-auto w-[1280px] flex-col items-center justify-between gap-[11px]">
+      <div className="flex h-auto w-full max-w-[1280px] flex-col items-center justify-between gap-[11px] max-[1365px]:w-[960px]">
         <div className="flex h-auto w-full flex-row items-center justify-between py-[18px]">
           <div className="flex h-auto w-auto gap-[6px] text-[24px] font-bold tracking-[-.5px]">
             <span className="text-[#7346f3]">오늘의 행사</span>
@@ -70,19 +60,22 @@ export default function TodayPromotions() {
             </svg>
           </Link>
         </div>
-        <div className="grid h-auto w-full grid-cols-6 gap-x-[16px] gap-y-[22px]">
-          {promotions.map((item) => (
+
+        <div className="grid h-auto w-full grid-cols-6 gap-x-[16px] gap-y-[22px] max-[1365px]:grid-cols-5">
+          {promotions.map((item, idx) => (
             <Link
               key={item.id}
               href={item.linkUrl}
-              className="group flex w-full flex-col gap-[10px]"
+              className={`group flex w-full flex-col gap-[10px] ${
+                idx >= 10 ? 'max-[1365px]:hidden' : ''
+              }`}
             >
-              <div className="relative aspect-square h-[200px] w-[200px] overflow-hidden rounded-[8px]">
+              <div className="relative aspect-square w-full overflow-hidden rounded-[8px]">
                 <Image
                   src={item.imageUrl}
                   alt={item.title}
                   fill
-                  sizes="(max-width: 1280px) 200px, 200px"
+                  sizes="(max-width: 1365px) 200px, 200px"
                   className="object-cover transition-transform duration-250 group-hover:scale-105"
                 />
 

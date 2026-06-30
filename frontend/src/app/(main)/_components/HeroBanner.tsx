@@ -200,7 +200,7 @@ export default function HeroBanner() {
       </div>
 
       {/* 하단 게이지 바 및 버튼 영역 */}
-      <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between py-[20px]">
+      <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between pt-[21px] pb-[20px] max-[1365px]:w-[960px]">
         <div className="relative mr-4 h-[2px] flex-1 overflow-hidden rounded-full bg-gray-200">
           <div
             className="absolute top-0 left-0 h-full bg-black transition-all duration-500 ease-out"

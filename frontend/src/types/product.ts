@@ -24,7 +24,7 @@ export type BlogCurationProduct = Pick<
 > & { displayOrder: number };
 
 export interface BlogCuration {
-  curationId: number;
+  id: number;
   blogName: string;
   author: string;
   postTitle: string;

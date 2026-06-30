@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import com.swj.backend.domain.display.blog.curation.product.BlogCurationProduct;
 
 public record BlogCurationResponseDto(
-	Long curationId,
+	Long id,
 	String blogName,
 	String author,
 	String postTitle,
@@ -15,7 +15,7 @@ public record BlogCurationResponseDto(
 	List<CurationProductDto> products
 ) {
 	public record CurationProductDto(
-		Long productId,
+		Long id,
 		String title,
 		Integer originalPrice,
 		int price,

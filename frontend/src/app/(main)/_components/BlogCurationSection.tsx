@@ -26,7 +26,6 @@ export default function BlogCurationSection() {
     const fetchCurations = async () => {
       try {
         const response = await api.get('/api/display/blog-curations');
-
         setCurations(response.data);
       } catch (error) {
         console.error('큐레이션 데이터 로드 실패:', error);
@@ -86,7 +85,7 @@ export default function BlogCurationSection() {
 
   return (
     <section className="flex h-auto w-full flex-col items-center border-b border-[#e8ecef] py-[40px]">
-      <div className="flex h-auto w-full max-w-[1280px] flex-col gap-[23px]">
+      <div className="flex h-auto w-full max-w-[1280px] flex-col gap-[24px] max-[1365px]:w-[960px]">
         <div className="flex h-auto flex-col gap-[6px] tracking-[-.5px]">
           <h2 className="text-[24px] leading-[32px] font-bold text-[#000000]">
             인기 <span className="text-[#7346f3]">패션</span> 블로그와 함께 찾는
@@ -98,10 +97,10 @@ export default function BlogCurationSection() {
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-1 gap-[14px] md:grid-cols-2">
-          {currentCurations.map((curation, index) => (
+        <div className="grid w-full grid-cols-1 gap-[16px] md:grid-cols-2">
+          {currentCurations.map((curation) => (
             <BlogCurationCard
-              key={index}
+              key={curation.id}
               curation={curation}
               wishList={wishList}
               onWishClick={handleWishClick}
@@ -109,7 +108,7 @@ export default function BlogCurationSection() {
           ))}
         </div>
 
-        <div className="mt-[1px] flex w-full items-center justify-center">
+        <div className="flex w-full items-center justify-center">
           <button
             onClick={() =>
               setCurrentPage((prev) => (prev === 1 ? totalPages : prev - 1))
@@ -132,7 +131,7 @@ export default function BlogCurationSection() {
               ></path>
             </svg>
           </button>
-          <span className="px-[44px] text-[16px] font-bold text-[#121212]">
+          <span className="px-[43px] text-[16px] font-bold text-[#121212]">
             {currentPage}{' '}
             <span className="font-medium text-[#949494]">/ {totalPages}</span>
           </span>

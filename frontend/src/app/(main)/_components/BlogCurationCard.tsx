@@ -6,10 +6,7 @@ import type { BlogCuration } from '@/types/product';
 interface BlogCurationCardProps {
   curation: BlogCuration;
   wishList: number[];
-  onWishClick: (
-    e: React.MouseEvent<HTMLButtonElement>,
-    productId: number,
-  ) => void;
+  onWishClick: (e: React.MouseEvent<HTMLButtonElement>, id: number) => void;
 }
 
 export default function BlogCurationCard({
@@ -18,10 +15,10 @@ export default function BlogCurationCard({
   onWishClick,
 }: BlogCurationCardProps) {
   return (
-    <div className="flex flex-col overflow-hidden rounded-[8px] ring-1 ring-[#e8ecef] ring-inset">
+    <div className="flex flex-col overflow-hidden rounded-[8px]">
       <a
         href={curation.blogUrl}
-        className="relative flex h-auto w-full flex-col justify-between gap-[6px] overflow-hidden rounded-t-[8px] px-[30px] pt-[36px] pb-[30px] text-white"
+        className="relative flex h-auto w-full flex-col justify-between gap-[6px] overflow-hidden rounded-[8px] px-[30px] pt-[36px] pb-[30px] text-white"
         style={{
           backgroundImage: `url(${curation.postThumbnailUrl})`,
           backgroundPosition: '50%',
@@ -30,7 +27,7 @@ export default function BlogCurationCard({
       >
         {/* inset-0 => top:0, right:0, bottom:0, left:0 을 한 번에 적용하는 Tailwind 클래스 */}
         <div
-          className="absolute inset-0 z-0 bg-black/25 backdrop-blur-[30px]"
+          className="absolute inset-0 z-0 rounded-[8px] bg-black/25 backdrop-blur-[30px]"
           aria-hidden="true" // 스크린 리더가 이 빈 박스를 읽지 않도록 처리 (접근성)
         />
         <div
@@ -73,9 +70,9 @@ export default function BlogCurationCard({
         </div>
       </a>
 
-      <div className="flex flex-col gap-[12px] px-[30px] pt-[24px] pb-[30px]">
+      <div className="flex flex-col gap-[12px] pt-[20px]">
         {curation.products.map((product) => {
-          const isWished = wishList.includes(product.productId);
+          const isWished = wishList.includes(product.id);
 
           const discountRate =
             product.originalPrice && product.originalPrice > product.price
@@ -88,13 +85,13 @@ export default function BlogCurationCard({
 
           return (
             <a
-              key={product.productId}
+              key={product.id}
               href={product.linkUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex cursor-pointer gap-[12px]"
             >
-              <div className="relative h-[110px] w-[110px] shrink-0 overflow-hidden rounded-[8px]">
+              <div className="relative h-[144px] w-[144px] shrink-0 overflow-hidden rounded-[8px]">
                 <Image
                   src={product.imageUrl}
                   alt={product.title}
@@ -108,7 +105,7 @@ export default function BlogCurationCard({
                   </div>
                 )}
                 <button
-                  onClick={(e) => onWishClick(e, product.productId)}
+                  onClick={(e) => onWishClick(e, product.id)}
                   className="absolute right-0 bottom-0 h-[40px] w-[40px] cursor-pointer p-[8px]"
                 >
                   <div
@@ -135,8 +132,8 @@ export default function BlogCurationCard({
                 </button>
               </div>
 
-              <div className="flex flex-col justify-center">
-                <span className="mb-[2px] line-clamp-1 text-[14px] text-[#121212]">
+              <div className="flex flex-col pt-[2px]">
+                <span className="mb-[2px] line-clamp-1 text-[15px] leading-[20px] text-[#121212]">
                   {product.title}
                 </span>
 
@@ -148,48 +145,47 @@ export default function BlogCurationCard({
                     </span>
                   )}
 
-                <div className="flex items-center gap-[3px] leading-[24px]">
+                <div className="flex items-center gap-[4px] leading-[28px]">
                   {/* 할인율 */}
                   {discountRate && (
-                    <strong className="text-[15px] font-bold text-[#d40022]">
+                    <strong className="text-[18px] font-bold text-[#d40022]">
                       {discountRate}%
                     </strong>
                   )}
-                  <strong className="text-[18px] text-[#121212]">
+                  <strong className="text-[20px] text-[#121212]">
                     {product.price.toLocaleString()}
                     <span className="shrink-0 text-[15px] font-medium">원</span>
                   </strong>
-
-                  {product.shippingFee > 0 && (
-                    <div className="relative flex max-w-[100%] text-[12px] leading-[18px] font-normal tracking-[-.5px] text-[#949494]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-[16px] w-[16px] fill-none"
-                      >
-                        <g
-                          stroke="currentColor"
-                          strokeWidth="0.85"
-                          clipPath="url(#a)"
-                        >
-                          <path
-                            d="M12.24 11.6a1.201 1.201 0 0 0-2.4 0 1.2 1.2 0 0 0 1.2 1.2c.666-.004 1.2-.54 1.2-1.2Zm-6.08 0a1.2 1.2 0 0 0-1.2-1.2c-.663 0-1.197.537-1.2 1.2a1.203 1.203 0 0 0 1.2 1.2 1.203 1.203 0 0 0 1.2-1.2Z"
-                            clipRule="evenodd"
-                          ></path>
-                          <path
-                            strokeLinecap="square"
-                            d="M7.667 4v0a.333.333 0 0 0-.334-.333h-5A.333.333 0 0 0 2 4v4.333m1.667 3.334H2.333A.333.333 0 0 1 2 11.333v-3m0 0h7.333m0-.006v-2.66c0-.184.15-.334.334-.334h2.794c.126 0 .241.072.298.185l1.206 2.412a.33.33 0 0 1 .035.149v3.254c0 .184-.15.334-.333.334h-1.334m-6 0h3.334"
-                          ></path>
-                        </g>
-                        <defs>
-                          <clipPath id="a">
-                            <path fill="#fff" d="M0 0h16v16H0z"></path>
-                          </clipPath>
-                        </defs>
-                      </svg>
-                      {product.shippingFee.toLocaleString()}원
-                    </div>
-                  )}
                 </div>
+                {product.shippingFee > 0 && (
+                  <div className="relative flex max-w-[100%] text-[12px] leading-[18px] font-normal tracking-[-.5px] text-[#949494]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-[16px] w-[16px] fill-none"
+                    >
+                      <g
+                        stroke="currentColor"
+                        strokeWidth="0.85"
+                        clipPath="url(#a)"
+                      >
+                        <path
+                          d="M12.24 11.6a1.201 1.201 0 0 0-2.4 0 1.2 1.2 0 0 0 1.2 1.2c.666-.004 1.2-.54 1.2-1.2Zm-6.08 0a1.2 1.2 0 0 0-1.2-1.2c-.663 0-1.197.537-1.2 1.2a1.203 1.203 0 0 0 1.2 1.2 1.203 1.203 0 0 0 1.2-1.2Z"
+                          clipRule="evenodd"
+                        ></path>
+                        <path
+                          strokeLinecap="square"
+                          d="M7.667 4v0a.333.333 0 0 0-.334-.333h-5A.333.333 0 0 0 2 4v4.333m1.667 3.334H2.333A.333.333 0 0 1 2 11.333v-3m0 0h7.333m0-.006v-2.66c0-.184.15-.334.334-.334h2.794c.126 0 .241.072.298.185l1.206 2.412a.33.33 0 0 1 .035.149v3.254c0 .184-.15.334-.333.334h-1.334m-6 0h3.334"
+                        ></path>
+                      </g>
+                      <defs>
+                        <clipPath id="a">
+                          <path fill="#fff" d="M0 0h16v16H0z"></path>
+                        </clipPath>
+                      </defs>
+                    </svg>
+                    {product.shippingFee.toLocaleString()}원
+                  </div>
+                )}
               </div>
             </a>
           );

@@ -81,7 +81,7 @@ export default function CategoryRecommend() {
 
   return (
     <section className="flex w-full flex-col items-center border-b border-[#e8ecef] py-[40px]">
-      <div className="flex w-full max-w-[1280px] flex-col gap-[16px] md:min-h-[794px]">
+      <div className="flex w-full max-w-[1280px] flex-col gap-[16px] max-[1365px]:w-[960px] md:min-h-[794px]">
         {/* 섹션 타이틀 */}
         <h2 className="text-[24px] leading-[32px] font-bold text-[#121212]">
           <span className="text-[#7346f3]">{currentCategory}</span> 상품
@@ -105,8 +105,8 @@ export default function CategoryRecommend() {
         </div>
 
         {/* 상품 목록 */}
-        <div className="mt-[4px] grid w-full grid-cols-2 gap-x-[16px] gap-y-[20px] md:min-h-[622px] md:grid-cols-4 lg:grid-cols-6">
-          {filteredProducts.map((product) => {
+        <div className="mt-[4px] mb-[12px] grid h-auto w-full grid-cols-6 gap-x-[16px] gap-y-[20px] max-[1365px]:grid-cols-5">
+          {filteredProducts.map((product, idx) => {
             const isWished = wishList.includes(product.id);
             const discountRate =
               product.originalPrice && product.originalPrice > product.price
@@ -123,15 +123,18 @@ export default function CategoryRecommend() {
                 href={product.linkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex cursor-pointer flex-col gap-[10px]"
+                className={`group cursor-pointer flex-col gap-[10px] ${
+                  idx >= 10 ? 'flex max-[1365px]:!hidden' : ''
+                }`}
               >
                 {/* 썸네일 & 찜 버튼 영역 */}
-                <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[8px] ring-1 ring-[#e8ecef] ring-inset">
+                <div className="relative mb-[10px] aspect-square w-full shrink-0 overflow-hidden rounded-[8px]">
                   <Image
                     src={product.imageUrl}
                     alt={product.title}
                     fill
                     unoptimized={true}
+                    sizes="(max-width: 1365px) 180px, 200px"
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
 
@@ -229,7 +232,7 @@ export default function CategoryRecommend() {
         </div>
 
         {/* 페이지네이션 */}
-        <div className="relative mt-[8px] flex w-full items-center justify-center">
+        <div className="relative flex w-full items-center justify-center">
           <div className="absolute top-1/2 left-0 -translate-y-1/2">
             <AdTooltip />
           </div>
@@ -253,7 +256,7 @@ export default function CategoryRecommend() {
             </svg>
           </button>
 
-          <span className="px-[44px] text-[16px] font-bold text-[#121212]">
+          <span className="px-[43px] text-[16px] font-bold text-[#121212]">
             {currentCategoryIdx + 1}{' '}
             <span className="font-medium text-[#949494]">
               / {CATEGORIES.length}
