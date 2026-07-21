@@ -33,7 +33,7 @@ export interface BlogCuration {
   products: BlogCurationProduct[];
 }
 
-export type RecommendProduct = Pick<
+export type CategoryRecommendProduct = Pick<
   Product,
   | 'id'
   | 'title'

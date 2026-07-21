@@ -8,7 +8,7 @@ export interface TodayPromotions {
   linkUrl: string;
 }
 
-export interface SuperPriceProducts {
+export interface SuperPriceProduct {
   id: number;
   title: string;
   originalPrice: number | null;
