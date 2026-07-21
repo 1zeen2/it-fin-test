@@ -44,9 +44,9 @@ export default function AdTooltip() {
     <div ref={containerRef} className="relative inline-flex items-center">
       <button
         onClick={handleToggleTooltip}
-        className="w-[30px] cursor-pointer rounded-[6px] border border-[#e6e6ea] bg-white text-center"
+        className="w-[30px] cursor-pointer rounded-[6px] border border-[#e6e6ea] bg-white text-center max-[1152px]:h-[16px] max-[1152px]:w-[23px] max-[1152px]:rounded-[4px]"
       >
-        <span className="text-[13px] leading-[18px] font-semibold text-[#2a2a2c]">
+        <span className="text-[13px] leading-[18px] font-semibold text-[#2a2a2c] max-[1152px]:text-[11px] max-[1152px]:leading-[14px] max-[1152px]:text-[#595959]">
           AD
         </span>
       </button>

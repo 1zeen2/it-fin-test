@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Gnb from './Gnb';
 import api from '@/lib/axios';
 import { useAuth } from '@/feature/auth/AuthContext';
 import Image from 'next/image';
@@ -10,7 +9,11 @@ import UserInfoModal from '@/feature/auth/modal/UserInfoModal';
 
 type ScrollState = 'TOP' | 'SCROLL_DOWN' | 'SCROLL_UP';
 
-export default function HeaderDesktop() {
+interface HeaderDesktopProps {
+  gnb: React.ReactNode;
+}
+
+export default function HeaderDesktop({ gnb }: HeaderDesktopProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const { isLoggedIn, logout } = useAuth();
@@ -110,7 +113,7 @@ export default function HeaderDesktop() {
 
   return (
     <header
-      className="pointer-events-none sticky top-0 z-50 flex hidden w-full flex-col transition-transform duration-400 ease-in-out min-[1152px]:flex"
+      className="pointer-events-none sticky top-0 z-50 flex w-full flex-col transition-transform duration-400 ease-in-out"
       style={{
         transform:
           scrollState === 'TOP'
@@ -354,7 +357,7 @@ export default function HeaderDesktop() {
               </div>
             </div>
 
-            <div className="flex shrink-0 items-center gap-[16px] text-[13px] leading-[16px] font-medium text-[#121212] min-[1152px]:gap-[26px]">
+            <div className="flex shrink-0 items-center gap-[26px] text-[13px] leading-[16px] font-medium text-[#121212]">
               <button className="flex cursor-pointer flex-col items-center gap-[4px] max-[1152px]:hidden">
                 <svg className="h-[28px] w-[28px] fill-none">
                   <path
@@ -401,7 +404,7 @@ export default function HeaderDesktop() {
       </div>
 
       <div
-        className={`flex w-full justify-center border-b border-[#e8ecef] bg-white px-[16px] ${
+        className={`flex w-full justify-center border-b border-[#e8ecef] bg-white px-[16px] xl:px-0 ${
           scrollState === 'TOP'
             ? 'pointer-events-auto visible'
             : 'pointer-events-none invisible delay-[400ms]'
@@ -415,9 +418,7 @@ export default function HeaderDesktop() {
               : 'opacity-0 delay-[400ms] duration-0'
           }`}
         >
-          <div className="w-full">
-            <Gnb />
-          </div>
+          <div className="w-full">{gnb}</div>
         </div>
       </div>
     </header>

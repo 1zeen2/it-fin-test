@@ -1,5 +1,5 @@
-import Header from '@/app/(main)/_components/HeaderDesktop';
 import React from 'react';
+import Header from './_components/Header';
 import BottomTabBar from './_components/BottomTabBar';
 
 export default function MainLayout({
@@ -8,7 +8,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen min-w-[485px] flex-col bg-white max-[1152px]:overflow-x-hidden">
+    <div className="flex min-h-screen flex-col bg-white max-[1152px]:overflow-x-hidden">
       <Header />
       <main className="flex w-full flex-1 flex-col max-[1152px]:pb-[60px] min-[1152px]:pb-0">
         {children}

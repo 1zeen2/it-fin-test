@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useAuth } from '@/feature/auth/AuthContext';
 import { useLoginAlertModal } from '@/feature/auth/LoginAlertModalContext';
 import type { SuperPriceProduct } from '@/types/promotions';
+import ViewAllLink from '@/components/common/ViewAllLink';
+import IconShipping from '@/components/common/icons/IconShipping';
 
 interface SuperPriceClientProps {
   initialProducts: SuperPriceProduct[];
@@ -54,31 +56,23 @@ export default function SuperPriceClient({
   };
 
   return (
-    <section className="mx-auto flex h-auto max-w-[1280px] flex-col gap-[18px] py-[40px] max-[1365px]:w-[960px]">
+    <section className="mx-auto flex h-auto max-w-[1280px] flex-col gap-[18px] py-[40px] max-[1365px]:w-[960px] max-[1152px]:w-full max-[1152px]:gap-[14px] max-[1152px]:py-[30px]">
       {/* 상단 텍스트 및 전체보기 */}
-      <div className="flex items-center justify-between leading-[32px]">
-        <h3 className="text-[24px] font-bold text-[#000000]">
+      <div className="flex items-center justify-between leading-[32px] max-[1152]:leading-[26px] max-[1152px]:px-[16px]">
+        <h3 className="text-[24px] font-bold text-[#000000] max-[1152]:text-[18px]">
           멤버십 고객은
-          <span className="ml-[6px] text-[#7346f3]">추가 10% 할인</span>
+          <span className="ml-[6px] text-[#7346f3] max-[1152px]:ml-[4.5px]">
+            추가 10% 할인
+          </span>
         </h3>
-        <div className="flex cursor-pointer items-center text-[17px] text-[#757575]">
-          <span>전체보기</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5.5 13l5-5-5-5"
-            ></path>
-          </svg>
-        </div>
+        <ViewAllLink href="https://shopping.naver.com/festa/onsale/brand/6a1d2799978cd6559d5b86da" />
       </div>
 
       {/* 중앙 그리드 */}
-      <div className="mt-[2px] grid w-full grid-cols-6 gap-x-[16px] gap-y-[20px] max-[1365px]:grid-cols-5">
+      <div className="mt-[2px] grid w-full grid-cols-6 gap-x-[16px] gap-y-[20px] max-[1365px]:grid-cols-5 max-[1152px]:flex max-[1152px]:shrink-0 max-[1152px]:gap-x-[12px] max-[1152px]:pl-[16px]">
         {page === 0 && (
           <div
-            className="relative col-span-1 row-span-2 cursor-pointer overflow-hidden rounded-[8px]"
+            className="relative col-span-1 row-span-2 cursor-pointer overflow-hidden rounded-[8px] max-[1152px]:hidden"
             onClick={handleBannerClick}
           >
             <Image
@@ -118,33 +112,33 @@ export default function SuperPriceClient({
               href={product.linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`group flex cursor-pointer flex-col gap-[10px] ${visibilityClass}`}
+              className={`group flex cursor-pointer flex-col gap-[10px] max-[1152px]:gap-[8px] ${visibilityClass}`}
             >
               {/* 1. 썸네일 & 뱃지 영역 */}
-              <div className="relative aspect-square w-full cursor-pointer overflow-hidden rounded-[8px]">
+              <div className="relative aspect-square w-full cursor-pointer overflow-hidden rounded-[8px] max-[1152px]:h-[180px] max-[1152px]:w-[180px] max-[1152px]:rounded-[4px]">
                 <Image
                   src={product.imageUrl}
                   alt={product.title}
                   fill
                   unoptimized
                   sizes="(max-width: 1365px) 180px, 200px"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105 max-[1152px]:w-[180px]"
                 />
 
                 {/* 좌측 상단 뱃지 (+세일, 슈퍼특가) */}
-                <div className="absolute top-0 left-0 flex h-[26px] w-[64px] items-center justify-center rounded-br-[8px] bg-[#7346f3]">
+                <div className="absolute top-0 left-0 flex h-[26px] w-[64px] items-center justify-center rounded-br-[8px] bg-[#7346f3] max-[1152px]:h-[22px] max-[1152px]:w-[53.5px] max-[1152px]:rounded-br-[4px]">
                   <Image
                     src="https://shop-phinf.pstatic.net/20250630_136/1751246565827GLTbl_PNG/PromotionLogo_EC8A88ED8DBCED8AB9EAB080_white.png"
                     alt="슈퍼특가"
                     width={48}
                     height={26}
-                    className="object-contain"
+                    className="max-[1152px]:h-[12px] max-[1152px]:w-[41.5px]"
                   />
                 </div>
 
                 <button
                   onClick={(e) => handleWishClick(e, product.id)}
-                  className="absolute right-[4px] bottom-[4px] z-10 flex h-[32px] w-[32px] cursor-pointer items-center justify-center"
+                  className="absolute right-[4px] bottom-[4px] z-10 flex h-[32px] w-[32px] cursor-pointer items-center justify-center max-[1152px]:hidden"
                 >
                   <div
                     className={`flex h-[24px] w-[24px] items-center justify-center rounded-full text-white transition-colors ${
@@ -173,62 +167,37 @@ export default function SuperPriceClient({
 
               {/* 2. 텍스트 정보 영역 */}
               <div className="flex flex-col px-[4px]">
-                <span className="line-clamp-2 text-[14px] leading-[19px] break-all text-ellipsis text-[#121212]">
+                <span className="line-clamp-2 text-[14px] leading-[19px] break-all text-ellipsis text-[#121212] max-[1152]:leading-[18px] max-[1152px]:pl-[1px] max-[1152px]:text-[13px]">
                   {product.title}
                 </span>
 
                 {product.originalPrice && (
-                  <span className="mt-[4px] text-[12px] text-[#949494] line-through">
+                  <span className="mt-[4px] text-[12px] text-[#949494] line-through max-[1152]:mt-[2px]">
                     {product.originalPrice.toLocaleString()}원
                   </span>
                 )}
 
-                <div className="mt-[-1px] flex items-start text-[15px] leading-[24px]">
+                <div className="mt-[-1px] flex items-start text-[15px] leading-[24px] max-[1152px]:text-[13px] max-[1152px]:leading-[17.5px]">
                   {product.discountRate && (
                     <strong className="mr-[2px] font-bold tracking-[0px] text-[#d40022]">
                       {product.discountRate}%
                     </strong>
                   )}
-                  <strong className="text-[18px] font-bold text-[#121212]">
+                  <strong className="text-[18px] font-bold text-[#121212] max-[1152px]:text-[16px]">
                     {product.price.toLocaleString()}
                   </strong>
-                  <span>원</span>
+                  <span className="max-[1152px]:text-[14px]">원</span>
                 </div>
 
                 {product.shippingFee > 0 && (
-                  <div className="mt-[2px] flex items-center gap-[1px] text-[12px] leading-[18px] font-normal text-[#949494]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="none"
-                    >
-                      <g
-                        stroke="currentColor"
-                        strokeWidth="0.85"
-                        clipPath="url(#a)"
-                      >
-                        <path
-                          d="M12.24 11.6a1.201 1.201 0 0 0-2.4 0 1.2 1.2 0 0 0 1.2 1.2c.666-.004 1.2-.54 1.2-1.2Zm-6.08 0a1.2 1.2 0 0 0-1.2-1.2c-.663 0-1.197.537-1.2 1.2a1.203 1.203 0 0 0 1.2 1.2 1.203 1.203 0 0 0 1.2-1.2Z"
-                          clipRule="evenodd"
-                        ></path>
-                        <path
-                          strokeLinecap="square"
-                          d="M7.667 4v0a.333.333 0 0 0-.334-.333h-5A.333.333 0 0 0 2 4v4.333m1.667 3.334H2.333A.333.333 0 0 1 2 11.333v-3m0 0h7.333m0-.006v-2.66c0-.184.15-.334.334-.334h2.794c.126 0 .241.072.298.185l1.206 2.412a.33.33 0 0 1 .035.149v3.254c0 .184-.15.334-.333.334h-1.334m-6 0h3.334"
-                        ></path>
-                      </g>
-                      <defs>
-                        <clipPath id="a">
-                          <path fill="#fff" d="M0 0h16v16H0z"></path>
-                        </clipPath>
-                      </defs>
-                    </svg>
+                  <div className="mt-[2px] flex items-center gap-[1px] text-[12px] leading-[18px] font-normal text-[#949494] max-[1152px]:mt-0">
+                    <IconShipping />
                     {product.shippingFee.toLocaleString()}원
                   </div>
                 )}
 
                 {/* 하단 태그 */}
-                <div className="mt-[8px] w-fit rounded-[2px] bg-[#7346f3]/7 px-[5px] text-[12px] leading-[22px] tracking-[0px] text-[#7346f3]">
+                <div className="mt-[8px] w-fit rounded-[2px] bg-[#7346f3]/7 px-[5px] text-[12px] leading-[22px] tracking-[0px] text-[#7346f3] max-[1152px]:mt-[4px]">
                   #{product.displayTag}
                 </div>
               </div>
@@ -238,7 +207,7 @@ export default function SuperPriceClient({
       </div>
 
       {/* 하단 페이지네이션 */}
-      <div className="mt-[7px] flex w-full items-center justify-center">
+      <div className="mt-[7px] flex w-full items-center justify-center max-[1152]:hidden">
         <button
           onClick={handlePage}
           className="flex h-[40px] w-[80px] cursor-pointer items-center justify-center rounded-[8px] border border-[#d3dadf] bg-white text-[#121212] transition-colors hover:bg-[#f3f6f8]"

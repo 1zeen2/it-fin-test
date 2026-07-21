@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import type { SyntheticEvent } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { transform } from "next/dist/build/swc/generated-native";
-import { error } from "console";
-import api from "@/lib/axios";
+import React, { useState } from 'react';
+import type { SyntheticEvent } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { transform } from 'next/dist/build/swc/generated-native';
+import { error } from 'console';
+import api from '@/lib/axios';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function SignUpPage() {
   // ==========================================================================================
 
   /** default는 한국어 */
-  const [lang, setLang] = useState("ko_KR");
+  const [lang, setLang] = useState('ko_KR');
 
   /** 약관 동의 */
   const [agreements, setAgreements] = useState({
@@ -37,36 +37,36 @@ export default function SignUpPage() {
 
   /** 회원 정보 입력 */
   const [formData, setFormData] = useState({
-    loginId: "",
-    pwd: "",
-    email: "",
-    name: "",
-    birth: "",
-    telecom: "",
-    gender: "",
-    nationality: "LOCAL",
-    phone: "",
+    loginId: '',
+    pwd: '',
+    email: '',
+    name: '',
+    birth: '',
+    telecom: '',
+    gender: '',
+    nationality: 'LOCAL',
+    phone: '',
   });
 
   /** 포커스 */
-  const [focusedField, setFocusedField] = useState("");
+  const [focusedField, setFocusedField] = useState('');
 
   /** 비밀번호 표시 */
   const [showPwd, setShowpwd] = useState(false);
 
   /** 에러 메시지 */
   const [errors, setErrors] = useState({
-    loginId: "",
-    pwd: "",
-    email: "",
-    name: "",
-    birth: "",
-    telecom: "",
-    phone: "",
+    loginId: '',
+    pwd: '',
+    email: '',
+    name: '',
+    birth: '',
+    telecom: '',
+    phone: '',
   });
 
   /** 비밀번호 안전 등급 */
-  const [pwdLevel, setPwdLevel] = useState("");
+  const [pwdLevel, setPwdLevel] = useState('');
 
   /** 통신사 선택 UI (모달 토글) */
   const [isTelecomModalOpen, setIsTelecomModalOpen] = useState(false);
@@ -88,15 +88,15 @@ export default function SignUpPage() {
   // ==========================================================================================
 
   // 2페이지 아니면 무조건 1페이지
-  const currentPage = searchParams.get("pageNum") === "2" ? 2 : 1;
+  const currentPage = searchParams.get('pageNum') === '2' ? 2 : 1;
 
   // 언어 선택 라벨 (전체 번역 현재 미구현 상태)
   const languageLabels: Record<string, string> = {
-    ko_KR: "한국어",
-    en_US: "English",
-    "zh-Hans_CN": "中文(简体)",
-    "zh-Hant_TW": "中文(台灣)",
-    ja_JP: "日本語",
+    ko_KR: '한국어',
+    en_US: 'English',
+    'zh-Hans_CN': '中文(简体)',
+    'zh-Hant_TW': '中文(台灣)',
+    ja_JP: '日本語',
   };
 
   // ==========================================================================================
@@ -131,23 +131,23 @@ export default function SignUpPage() {
   /** 유효성 검사 */
   const validateField = (name: string, value: string) => {
     switch (name) {
-      case "loginId":
+      case 'loginId':
         return /^[a-z0-9][a-z0-9_\-]{4,19}$/.test(value);
-      case "pwd":
+      case 'pwd':
         return /^[A-Za-z0-9`\-=\\[\];',./~!@#$%^&*()_+|{}:"<>?]{8,16}$/.test(
           value,
         );
-      case "email":
+      case 'email':
         return (
           !value ||
           /^[-_.~0-9a-zA-Z]+(\.[-_.~0-9a-zA-Z]+)*@[-_.0-9a-zA-Z]+(\.[0-9a-zA-Z]+)*/.test(
             value,
           )
         );
-      case "name":
+      case 'name':
         // 한글과 영문 대/소문자 2~20자 (특수기호, 공백 사용 불가)
         return /^[가-힣a-zA-Z]{2,20}$/.test(value);
-      case "birth":
+      case 'birth':
         // 8자리 숫자 포맷 확인
         if (!/^\d{8}$/.test(value)) return false;
 
@@ -184,10 +184,10 @@ export default function SignUpPage() {
         }
 
         return true;
-      case "telecom":
-        return value !== ""; // 통신사가 선택되었는지 확인
+      case 'telecom':
+        return value !== ''; // 통신사가 선택되었는지 확인
 
-      case "phone":
+      case 'phone':
         return /^010-\d{3,4}-\d{4}$/.test(value);
 
       default:
@@ -197,10 +197,10 @@ export default function SignUpPage() {
 
   /** 비밀번호 안전 등급 UI */
   const evaluatePwdLevel = (pw: string) => {
-    if (!pw) return "";
+    if (!pw) return '';
 
     const basicRegex = /^[A-Za-z0-9`\-=\\[\];',./~!@#$%^&*()_+|{}:"<>?]{8,16}$/;
-    if (!basicRegex.test(pw)) return "사용불가";
+    if (!basicRegex.test(pw)) return '사용불가';
 
     // 키보드 기준, 나열된 문자나 숫자 혹은 연속으로 반복되는 문자는 위험 등급으로 고정
     const hasSequentialPattern = (str: string) => {
@@ -213,14 +213,14 @@ export default function SignUpPage() {
 
       // 시퀀스에 해당하는 값 (키보드 상 -> 방향과 <- 방향만 4줄만 설정)
       const sequences = [
-        "1234567890",
-        "0987654321",
-        "qwertyuiop",
-        "poiuytrewq",
-        "asdfghjkl",
-        "lkjhgfdsa",
-        "zxcvbnm,./",
-        "/.,mnbvcxz",
+        '1234567890',
+        '0987654321',
+        'qwertyuiop',
+        'poiuytrewq',
+        'asdfghjkl',
+        'lkjhgfdsa',
+        'zxcvbnm,./',
+        '/.,mnbvcxz',
       ];
 
       // 3글자 이상 연속되는 경우 해당
@@ -234,7 +234,7 @@ export default function SignUpPage() {
       return false;
     };
 
-    if (hasSequentialPattern(pw)) return "위험";
+    if (hasSequentialPattern(pw)) return '위험';
 
     let typesCount = 0;
 
@@ -243,11 +243,11 @@ export default function SignUpPage() {
     if (/[0-9]/.test(pw)) typesCount++;
     if (/[^a-zA-Z0-9]/.test(pw)) typesCount++;
 
-    if (typesCount < 2) return "위험";
-    if (typesCount === 2) return pw.length >= 10 ? "보통" : "위험";
-    if (typesCount >= 3) return pw.length >= 10 ? "안전" : "보통";
+    if (typesCount < 2) return '위험';
+    if (typesCount === 2) return pw.length >= 10 ? '보통' : '위험';
+    if (typesCount >= 3) return pw.length >= 10 ? '안전' : '보통';
 
-    return "위험";
+    return '위험';
   };
 
   // ====================================== [입력 핸들러] =======================================
@@ -260,17 +260,17 @@ export default function SignUpPage() {
 
     let tempValue = value;
 
-    if (name === "phone") {
-      tempValue = value.replace(/[^0-9]/g, "");
+    if (name === 'phone') {
+      tempValue = value.replace(/[^0-9]/g, '');
     }
 
     setFormData((prev) => ({ ...prev, [name]: tempValue }));
 
     if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
 
-    if (name === "pwd") {
+    if (name === 'pwd') {
       setPwdLevel(evaluatePwdLevel(tempValue));
     }
   };
@@ -282,63 +282,63 @@ export default function SignUpPage() {
       | { target: { name: string; value: string } },
   ) => {
     const { name, value } = e.target;
-    let errorMsg = "";
+    let errorMsg = '';
 
     switch (name) {
-      case "loginId":
-        if (!value) errorMsg = "아이디: 필수 정보입니다.";
-        else if (!validateField("loginId", value))
+      case 'loginId':
+        if (!value) errorMsg = '아이디: 필수 정보입니다.';
+        else if (!validateField('loginId', value))
           errorMsg =
-            "아이디: 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.";
+            '아이디: 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.';
         break;
 
-      case "pwd":
-        if (!value) errorMsg = "비밀번호: 필수 정보입니다.";
-        else if (!validateField("pwd", value))
+      case 'pwd':
+        if (!value) errorMsg = '비밀번호: 필수 정보입니다.';
+        else if (!validateField('pwd', value))
           errorMsg =
-            "비밀번호: 8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.";
+            '비밀번호: 8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.';
         break;
 
-      case "email":
-        if (!validateField("email", value))
-          errorMsg = "이메일: 이메일 주소가 정확한지 확인해 주세요.";
+      case 'email':
+        if (!validateField('email', value))
+          errorMsg = '이메일: 이메일 주소가 정확한지 확인해 주세요.';
         break;
 
-      case "name":
-        if (!value) errorMsg = "이름: 필수 정보입니다.";
-        else if (!validateField("name", value))
+      case 'name':
+        if (!value) errorMsg = '이름: 필수 정보입니다.';
+        else if (!validateField('name', value))
           errorMsg =
-            "이름: 한글과 영문 대/소문자를 사용하세요. (특수기호, 공백 사용 불가)";
+            '이름: 한글과 영문 대/소문자를 사용하세요. (특수기호, 공백 사용 불가)';
         break;
 
-      case "birth":
-        if (!value) errorMsg = "생년월일: 필수 정보입니다.";
+      case 'birth':
+        if (!value) errorMsg = '생년월일: 필수 정보입니다.';
         else if (value.length !== 8)
-          errorMsg = "생년월일: 생년월일은 8자리 숫자로 입력해 주세요.";
-        else if (!validateField("birth", value))
-          errorMsg = "생년월일: 생년월일이 정확한지 확인해 주세요.";
+          errorMsg = '생년월일: 생년월일은 8자리 숫자로 입력해 주세요.';
+        else if (!validateField('birth', value))
+          errorMsg = '생년월일: 생년월일이 정확한지 확인해 주세요.';
         break;
 
-      case "telecom":
-        if (!value) errorMsg = "통신사: 이용하는 통신사를 선택해 주세요.";
+      case 'telecom':
+        if (!value) errorMsg = '통신사: 이용하는 통신사를 선택해 주세요.';
         break;
 
-      case "phone":
-        const rawValue = value.replace(/[^0-9]/g, "");
+      case 'phone':
+        const rawValue = value.replace(/[^0-9]/g, '');
         let phone = rawValue;
 
         if (rawValue.length > 3 && rawValue.length <= 7) {
-          phone = rawValue.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+          phone = rawValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
         } else if (rawValue.length > 7) {
-          phone = rawValue.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
+          phone = rawValue.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
         }
 
         setFormData((prev) => ({ ...prev, phone }));
 
         if (!rawValue) {
-          errorMsg = "휴대전화번호: 필수 정보입니다.";
-        } else if (!validateField("phone", phone)) {
-          errorMsg = "휴대전화번호: 형식이 올바르지 않습니다.";
+          errorMsg = '휴대전화번호: 필수 정보입니다.';
+        } else if (!validateField('phone', phone)) {
+          errorMsg = '휴대전화번호: 형식이 올바르지 않습니다.';
         }
         break;
     }
@@ -350,10 +350,10 @@ export default function SignUpPage() {
   const handleTelecomSelect = (value: string) => {
     setFormData((prev) => ({ ...prev, telecom: value }));
     setIsTelecomModalOpen(false);
-    setFocusedField("");
+    setFocusedField('');
 
     if (errors.telecom) {
-      setErrors((prev) => ({ ...prev, telecom: "" }));
+      setErrors((prev) => ({ ...prev, telecom: '' }));
     }
   };
 
@@ -379,9 +379,9 @@ export default function SignUpPage() {
       const nextState = { ...prev, [name]: checked };
 
       // 개인정보 수집(privacy), 이벤트(event)는 함께 체크 / 해제 됨
-      if (name === "privacy") {
+      if (name === 'privacy') {
         nextState.event = checked;
-      } else if (name === "event") {
+      } else if (name === 'event') {
         nextState.privacy = checked;
       }
 
@@ -419,7 +419,7 @@ export default function SignUpPage() {
   /** 페이지 이동 */
   const handleNextPage = () => {
     if (!isRequiredChecked) {
-      alert("필수 이용 약관에 동의해주세요.");
+      alert('필수 이용 약관에 동의해주세요.');
       return;
     }
     router.push(`${pathname}?pageNum=2`);
@@ -432,30 +432,30 @@ export default function SignUpPage() {
     e.preventDefault(); // 브라우저 새로고침 방지
 
     if (!isAllAuthAgreed) {
-      alert("인증 약관 전체동의는 필수입니다.");
+      alert('인증 약관 전체동의는 필수입니다.');
       return;
     }
 
     const requiredFields = [
-      "loginId",
-      "pwd",
-      "name",
-      "birth",
-      "telecom",
-      "gender",
-      "nationality",
-      "phone",
+      'loginId',
+      'pwd',
+      'name',
+      'birth',
+      'telecom',
+      'gender',
+      'nationality',
+      'phone',
     ];
     for (const field of requiredFields) {
       if (!formData[field as keyof typeof formData]) {
-        alert("입력하지 않은 필수 항목이 있습니다.");
+        alert('입력하지 않은 필수 항목이 있습니다.');
         return;
       }
     }
 
-    const hasErrors = Object.values(errors).some((errorMsg) => errorMsg !== "");
+    const hasErrors = Object.values(errors).some((errorMsg) => errorMsg !== '');
     if (hasErrors) {
-      alert("입력하신 정보의 형식을 다시 확인해 주세요.");
+      alert('입력하신 정보의 형식을 다시 확인해 주세요.');
       return;
     }
 
@@ -479,17 +479,16 @@ export default function SignUpPage() {
       phone: formData.phone,
       authTermsAgreed: isAllAuthAgreed, // [필수] 인증 약관 전체 동의
     };
-    console.log("회원가입 요청 데이터:", apiPayload);
 
     try {
-      const response = await api.post("/api/auth/signup", apiPayload);
+      const response = await api.post('/api/auth/signup', apiPayload);
       if (response.status === 200 || response.status === 201) {
-        alert("회원 가입이 완료되었습니다!");
-        router.push("/login");
+        alert('회원 가입이 완료되었습니다!');
+        router.push('/login');
       }
     } catch (error) {
-      console.error("회원가입 API 호출 실패", error);
-      alert("회원가입 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      console.error('회원가입 API 호출 실패', error);
+      alert('회원가입 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
   };
 
@@ -507,10 +506,10 @@ export default function SignUpPage() {
           style={{
             backgroundImage:
               'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-            backgroundSize: "380px 340px",
-            backgroundPosition: "0 -258px",
+            backgroundSize: '380px 340px',
+            backgroundPosition: '0 -258px',
           }}
-          onClick={() => router.push("/")}
+          onClick={() => router.push('/')}
         />
         {currentPage === 1 && (
           <div className="flex h-full w-auto items-center justify-center">
@@ -520,8 +519,8 @@ export default function SignUpPage() {
               style={{
                 backgroundImage:
                   'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                backgroundPosition: "-350px -292px",
-                backgroundSize: "380px 340px",
+                backgroundPosition: '-350px -292px',
+                backgroundSize: '380px 340px',
               }}
             />
 
@@ -563,13 +562,13 @@ export default function SignUpPage() {
               style={{
                 backgroundImage:
                   'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                backgroundPosition: "-168px -258px",
-                backgroundSize: "380px 340px",
+                backgroundPosition: '-168px -258px',
+                backgroundSize: '380px 340px',
               }}
             />
           </div>
         )}
-      </div>{" "}
+      </div>{' '}
       {/* header */}
       {/* 1페이지 body */}
       {currentPage === 1 && (
@@ -588,10 +587,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px", // 헤더에서 썼던 사이즈와 동일하게 맞춰야 안 깨집니다.
+                    backgroundSize: '380px 340px', // 헤더에서 썼던 사이즈와 동일하게 맞춰야 안 깨집니다.
                     backgroundPosition: isAllChecked
-                      ? "-318px -224px"
-                      : "-282px -200px",
+                      ? '-318px -224px'
+                      : '-282px -200px',
                   }}
                 />
 
@@ -611,7 +610,7 @@ export default function SignUpPage() {
               {/* 클릭 이벤트 */}
               <div
                 className="flex cursor-pointer items-center gap-[2px] align-middle text-[15px] font-semibold"
-                onClick={() => handleSingleCheck("terms", !agreements.terms)}
+                onClick={() => handleSingleCheck('terms', !agreements.terms)}
               >
                 {/* 체크 이미지 */}
                 <div
@@ -619,10 +618,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: agreements.terms
-                      ? "-318px -224px"
-                      : "-282px -200px",
+                      ? '-318px -224px'
+                      : '-282px -200px',
                   }}
                 />
                 <span className="text-[#03A94D]">필수</span>
@@ -642,7 +641,7 @@ export default function SignUpPage() {
               <div
                 className="flex cursor-pointer items-center gap-[2px]"
                 onClick={() =>
-                  handleSingleCheck("realname", !agreements.realname)
+                  handleSingleCheck('realname', !agreements.realname)
                 }
               >
                 <div
@@ -650,10 +649,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: agreements.realname
-                      ? "-318px -224px"
-                      : "-282px -200px",
+                      ? '-318px -224px'
+                      : '-282px -200px',
                   }}
                 />
 
@@ -670,7 +669,7 @@ export default function SignUpPage() {
               <div
                 className="flex cursor-pointer items-center gap-[2px] text-[15px] leading-[20px] font-semibold text-[#929294]"
                 onClick={() =>
-                  handleSingleCheck("location", !agreements.location)
+                  handleSingleCheck('location', !agreements.location)
                 }
               >
                 {/* 체크 이미지 */}
@@ -679,10 +678,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: agreements.location
-                      ? "-318px -224px"
-                      : "-282px -200px",
+                      ? '-318px -224px'
+                      : '-282px -200px',
                   }}
                 />
 
@@ -703,7 +702,7 @@ export default function SignUpPage() {
               <div
                 className="flex cursor-pointer items-center gap-[2px] text-[15px] leading-[20px] font-semibold text-[#929294]"
                 onClick={() =>
-                  handleSingleCheck("privacy", !agreements.privacy)
+                  handleSingleCheck('privacy', !agreements.privacy)
                 }
               >
                 {/* 체크 이미지 */}
@@ -712,10 +711,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: agreements.privacy
-                      ? "-318px -224px"
-                      : "-282px -200px",
+                      ? '-318px -224px'
+                      : '-282px -200px',
                   }}
                 />
 
@@ -735,7 +734,7 @@ export default function SignUpPage() {
               {/* 클릭 이벤트 */}
               <div
                 className="flex cursor-pointer items-center gap-[2px]"
-                onClick={() => handleSingleCheck("event", !agreements.event)}
+                onClick={() => handleSingleCheck('event', !agreements.event)}
               >
                 {/* 체크 이미지 */}
                 <div
@@ -743,10 +742,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: agreements.event
-                      ? "-186px -258px"
-                      : "-132px -258px",
+                      ? '-186px -258px'
+                      : '-132px -258px',
                   }}
                 />
 
@@ -768,8 +767,8 @@ export default function SignUpPage() {
                     style={{
                       backgroundImage:
                         'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                      backgroundSize: "380px 340px",
-                      backgroundPosition: "-216px -96px",
+                      backgroundSize: '380px 340px',
+                      backgroundPosition: '-216px -96px',
                     }}
                   />
 
@@ -782,11 +781,11 @@ export default function SignUpPage() {
                     style={{
                       backgroundImage:
                         'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                      backgroundSize: "380px 340px",
-                      backgroundPosition: "-232px -184px",
+                      backgroundSize: '380px 340px',
+                      backgroundPosition: '-232px -184px',
                       transform: isPrivacyGuideOpen
-                        ? "rotate(180deg)"
-                        : "rotate(0deg)",
+                        ? 'rotate(180deg)'
+                        : 'rotate(0deg)',
                     }}
                   />
                 </div>
@@ -797,7 +796,7 @@ export default function SignUpPage() {
                 className="z-10 text-[14px] leading-[19px] font-normal text-[#737373] underline"
                 onClick={(e) => {
                   e.preventDefault();
-                  alert("어린이용 안내 페이지로 이동");
+                  alert('어린이용 안내 페이지로 이동');
                 }}
               >
                 어린이용 안내
@@ -826,7 +825,7 @@ export default function SignUpPage() {
                   이후 자유롭게 등록 가능합니다.
                   <br />
                   <strong className="font-bold">
-                    자세한 내용은{" "}
+                    자세한 내용은{' '}
                     <a
                       href="https://policy.naver.com/policy/privacy.html"
                       target="_blank"
@@ -846,7 +845,7 @@ export default function SignUpPage() {
               type="button"
               onClick={handleNextPage}
               disabled={!isRequiredChecked}
-              className={`mt-[23px] flex h-auto w-full items-center justify-center rounded-[8px] py-[16px] text-[16px] font-semibold text-white ${isRequiredChecked ? "cursor-pointer bg-[#03A94D]" : "cursor-not-allowed bg-[#8990a0]"} `}
+              className={`mt-[23px] flex h-auto w-full items-center justify-center rounded-[8px] py-[16px] text-[16px] font-semibold text-white ${isRequiredChecked ? 'cursor-pointer bg-[#03A94D]' : 'cursor-not-allowed bg-[#8990a0]'} `}
             >
               다음
             </button>
@@ -857,7 +856,7 @@ export default function SignUpPage() {
                 단체, 비즈니스 회원 가입
               </span>
             </div>
-          </div>{" "}
+          </div>{' '}
           {/* 개인정보 동의 wrapper (border영역) */}
         </div> // 1페이지 body
       )}
@@ -868,7 +867,7 @@ export default function SignUpPage() {
             <div
               className="mt-[23px] flex items-center justify-end gap-[4px]"
               onClick={() =>
-                handleSingleCheck("realname", !agreements.realname)
+                handleSingleCheck('realname', !agreements.realname)
               }
             >
               <span className="cursor-pointer text-[13px] leading-[18px] tracking-[-.4px] text-[#929294]">
@@ -879,10 +878,10 @@ export default function SignUpPage() {
                 style={{
                   backgroundImage:
                     'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                  backgroundSize: "380px 340px",
+                  backgroundSize: '380px 340px',
                   backgroundPosition: agreements.realname
-                    ? "-350px -270px"
-                    : "-350px -248px",
+                    ? '-350px -270px'
+                    : '-350px -248px',
                 }}
               />
             </div>
@@ -893,12 +892,12 @@ export default function SignUpPage() {
               <div
                 className={`relative flex h-auto items-center justify-between gap-[6px] rounded-t-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                   errors.loginId
-                    ? "z-10 rounded-t-[6px] border border-[#ff3f3f]"
-                    : focusedField === "loginId" &&
+                    ? 'z-10 rounded-t-[6px] border border-[#ff3f3f]'
+                    : focusedField === 'loginId' &&
                         formData.loginId.length > 0 &&
                         !errors.loginId
-                      ? "z-10 border-[#03A94D]"
-                      : "border-[#dfdfdf]"
+                      ? 'z-10 border-[#03A94D]'
+                      : 'border-[#dfdfdf]'
                 } `}
               >
                 {/* 사람 모양 아이콘 */}
@@ -907,13 +906,13 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: errors.loginId
-                      ? "-318px -160px"
-                      : focusedField === "loginId" ||
+                      ? '-318px -160px'
+                      : focusedField === 'loginId' ||
                           (formData.loginId.length > 0 && !errors.loginId)
-                        ? "-318px -32px"
-                        : "-318px -192px",
+                        ? '-318px -32px'
+                        : '-318px -192px',
                   }}
                 />
                 {/* 아이디 입력 필드 */}
@@ -922,16 +921,16 @@ export default function SignUpPage() {
                   name="loginId"
                   value={formData.loginId}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField("loginId")}
+                  onFocus={() => setFocusedField('loginId')}
                   onBlur={(e) => {
-                    setFocusedField("");
+                    setFocusedField('');
                     handleBlur(e);
                   }}
                   placeholder="아이디"
                   className={`h-full w-full cursor-pointer bg-transparent pb-[1px] text-[16px] leading-[22px] outline-none ${
                     errors.loginId
-                      ? "text-[#ff3f3f] underline placeholder-[#ff3f3f]"
-                      : "text-[#222] placeholder-[#8e8e8e]"
+                      ? 'text-[#ff3f3f] underline placeholder-[#ff3f3f]'
+                      : 'text-[#222] placeholder-[#8e8e8e]'
                   }`}
                 />
                 <span className="text-[15px] tracking-[-.2px] text-[#8e8e8e]">
@@ -943,12 +942,12 @@ export default function SignUpPage() {
               <div
                 className={`relative -mt-[1px] flex h-auto items-center justify-between gap-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                   errors.pwd
-                    ? "z-10 border border-[#ff3f3f]"
-                    : focusedField === "pwd" &&
+                    ? 'z-10 border border-[#ff3f3f]'
+                    : focusedField === 'pwd' &&
                         formData.pwd.length > 0 &&
                         !errors.pwd
-                      ? "z-10 border-[#03A94D]"
-                      : "border-[#dfdfdf]"
+                      ? 'z-10 border-[#03A94D]'
+                      : 'border-[#dfdfdf]'
                 }`}
               >
                 <div
@@ -956,44 +955,44 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: errors.pwd
-                      ? "-318px -96px"
-                      : focusedField === "pwd" ||
+                      ? '-318px -96px'
+                      : focusedField === 'pwd' ||
                           (formData.pwd.length > 0 && !errors.pwd)
-                        ? "-318px -128px"
-                        : "-318px -64px",
+                        ? '-318px -128px'
+                        : '-318px -64px',
                   }}
                 />
                 {/* 비밀번호 입력 필드 */}
                 <input
-                  type={showPwd ? "text" : "password"}
+                  type={showPwd ? 'text' : 'password'}
                   name="pwd"
                   value={formData.pwd}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField("pwd")}
+                  onFocus={() => setFocusedField('pwd')}
                   onBlur={(e) => {
-                    setFocusedField("");
+                    setFocusedField('');
                     handleBlur(e);
                   }}
                   placeholder="비밀번호"
                   className={`h-full w-full cursor-pointer pb-[1px] text-[16px] leading-[22px] outline-none ${
                     errors.pwd
-                      ? "text-[#ff3f3f] underline placeholder-[#ff3f3f]"
-                      : "text-[#222] placeholder-[#8e8e8e]"
+                      ? 'text-[#ff3f3f] underline placeholder-[#ff3f3f]'
+                      : 'text-[#222] placeholder-[#8e8e8e]'
                   }`}
                 />
                 {/* 비밀번호 안전도 메시지 출력 */}
                 {pwdLevel && (
                   <div
                     className={`flex shrink-0 items-center justify-center rounded-[10px] px-[6px] pt-[4px] pb-[3px] text-[11px] leading-[13px] font-bold tracking-[-.4px] ${
-                      pwdLevel === "사용불가" || pwdLevel === "위험"
-                        ? "bg-[rgba(236,62,59,0.12)] text-[#eb0000]"
-                        : pwdLevel === "보통"
-                          ? "bg-[rgba(255,168,0,0.12)] text-[#ffa41c]"
-                          : pwdLevel === "안전"
-                            ? "bg-[rgba(3,169,77,0.12)] text-[#03A94D]"
-                            : ""
+                      pwdLevel === '사용불가' || pwdLevel === '위험'
+                        ? 'bg-[rgba(236,62,59,0.12)] text-[#eb0000]'
+                        : pwdLevel === '보통'
+                          ? 'bg-[rgba(255,168,0,0.12)] text-[#ffa41c]'
+                          : pwdLevel === '안전'
+                            ? 'bg-[rgba(3,169,77,0.12)] text-[#03A94D]'
+                            : ''
                     }`}
                   >
                     {pwdLevel}
@@ -1006,10 +1005,10 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: showPwd
-                      ? "-288px -310px"
-                      : "-258px -278px",
+                      ? '-288px -310px'
+                      : '-258px -278px',
                   }}
                 />
               </div>
@@ -1018,12 +1017,12 @@ export default function SignUpPage() {
               <div
                 className={`relative -mt-[1px] flex h-auto w-full items-center justify-between gap-[6px] rounded-b-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                   errors.email
-                    ? "z-10 border-[#ff3f3f]"
-                    : focusedField === "email" &&
+                    ? 'z-10 border-[#ff3f3f]'
+                    : focusedField === 'email' &&
                         formData.email.length > 0 &&
                         !errors.email
-                      ? "z-10 border-[#03A94D]"
-                      : "border-[#dfdfdf]"
+                      ? 'z-10 border-[#03A94D]'
+                      : 'border-[#dfdfdf]'
                 } `}
               >
                 <div
@@ -1031,13 +1030,13 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: errors.email
-                      ? "-318px 0"
-                      : focusedField === "email" ||
+                      ? '-318px 0'
+                      : focusedField === 'email' ||
                           (formData.email.length > 0 && !errors.email)
-                        ? "-216px -128px"
-                        : "-160px -310px",
+                        ? '-216px -128px'
+                        : '-160px -310px',
                   }}
                 />
                 <input
@@ -1045,19 +1044,19 @@ export default function SignUpPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField("email")}
+                  onFocus={() => setFocusedField('email')}
                   onBlur={(e) => {
-                    setFocusedField("");
+                    setFocusedField('');
                     handleBlur(e);
                   }}
                   placeholder="[선택] 이메일주소 (비밀번호 찾기 등 본인 확인용)"
                   className={`h-full w-full cursor-pointer pb-[1px] text-[16px] leading-[22px] outline-none ${
                     errors.email
-                      ? "text-[#ff3f3f] underline placeholder:text-[#ff3f3f]"
-                      : "text-[#222] placeholder:text-[#8e8e8e]"
+                      ? 'text-[#ff3f3f] underline placeholder:text-[#ff3f3f]'
+                      : 'text-[#222] placeholder:text-[#8e8e8e]'
                   }`}
                 />
-                <div className="h-[30px] w-[30px] shrink-0" />{" "}
+                <div className="h-[30px] w-[30px] shrink-0" />{' '}
                 {/* 간격 맞춤용 빈 박스 */}
               </div>
               {/* 유효성 검사에 대한 멘트 출력 영역 */}
@@ -1093,12 +1092,12 @@ export default function SignUpPage() {
               <div
                 className={`relative flex h-auto w-full items-center justify-between gap-[6px] rounded-t-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                   errors.name
-                    ? "z-10 border-[#ff3f3f]"
-                    : focusedField === "name" &&
+                    ? 'z-10 border-[#ff3f3f]'
+                    : focusedField === 'name' &&
                         formData.name.length > 0 &&
                         !errors.name
-                      ? "z-10 border-[#03A94D]"
-                      : "border-[#dfdfdf]"
+                      ? 'z-10 border-[#03A94D]'
+                      : 'border-[#dfdfdf]'
                 }`}
               >
                 <div
@@ -1106,13 +1105,13 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: errors.name
-                      ? "-318px -160px"
-                      : focusedField === "name" ||
+                      ? '-318px -160px'
+                      : focusedField === 'name' ||
                           (formData.name.length > 0 && !errors.name)
-                        ? "-318px -32px"
-                        : "-318px -192px",
+                        ? '-318px -32px'
+                        : '-318px -192px',
                   }}
                 />
                 <input
@@ -1120,16 +1119,16 @@ export default function SignUpPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField("name")}
+                  onFocus={() => setFocusedField('name')}
                   onBlur={(e) => {
-                    setFocusedField("");
+                    setFocusedField('');
                     handleBlur(e);
                   }}
                   placeholder="이름"
                   className={`h-full w-full cursor-pointer bg-transparent text-[15px] leading-[22px] font-normal outline-none ${
                     errors.name
-                      ? "text-[#ff3f3f] underline placeholder:text-[#ff3f3f]"
-                      : "text-[#222] placeholder:text-[#8e8e8e]"
+                      ? 'text-[#ff3f3f] underline placeholder:text-[#ff3f3f]'
+                      : 'text-[#222] placeholder:text-[#8e8e8e]'
                   }`}
                 />
                 <div className="h-[30px] w-[30px] shrink-0" />
@@ -1139,12 +1138,12 @@ export default function SignUpPage() {
               <div
                 className={`relative -mt-[1px] flex h-auto w-full items-center justify-between gap-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                   errors.birth
-                    ? "z-10 border-[#ff3f3f]"
-                    : focusedField === "birth" &&
+                    ? 'z-10 border-[#ff3f3f]'
+                    : focusedField === 'birth' &&
                         formData.birth.length > 0 &&
                         !errors.birth
-                      ? "z-10 border-[#03A94D]"
-                      : "border-[#dfdfdf]"
+                      ? 'z-10 border-[#03A94D]'
+                      : 'border-[#dfdfdf]'
                 }`}
               >
                 <div
@@ -1152,13 +1151,13 @@ export default function SignUpPage() {
                   style={{
                     backgroundImage:
                       'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                    backgroundSize: "380px 340px",
+                    backgroundSize: '380px 340px',
                     backgroundPosition: errors.birth
-                      ? "-96px -310px"
-                      : focusedField === "birth" ||
+                      ? '-96px -310px'
+                      : focusedField === 'birth' ||
                           (formData.birth.length > 0 && !errors.birth)
-                        ? "-64px -310px"
-                        : "-128px -310px",
+                        ? '-64px -310px'
+                        : '-128px -310px',
                   }}
                 />
                 <input
@@ -1166,17 +1165,17 @@ export default function SignUpPage() {
                   name="birth"
                   value={formData.birth}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField("birth")}
+                  onFocus={() => setFocusedField('birth')}
                   onBlur={(e) => {
-                    setFocusedField("");
+                    setFocusedField('');
                     handleBlur(e);
                   }}
                   placeholder="생년월일 8자리"
                   maxLength={8}
                   className={`h-full w-full cursor-pointer bg-transparent pb-[1px] text-[16px] leading-[22px] outline-none ${
                     errors.birth
-                      ? "text-[#ff3f3f] underline placeholder:text-[#ff3f3f]"
-                      : "text-[#222] placeholder:text-[#8e8e8e]"
+                      ? 'text-[#ff3f3f] underline placeholder:text-[#ff3f3f]'
+                      : 'text-[#222] placeholder:text-[#8e8e8e]'
                   }`}
                 />
                 <div className="h-[30px] w-[30px] shrink-0" />
@@ -1187,10 +1186,10 @@ export default function SignUpPage() {
                 <div
                   className={`relative -mt-[1px] flex h-auto w-full items-center gap-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                     errors.telecom
-                      ? "z-10 border-[#ff3f3f]"
-                      : focusedField === "telecom" || isTelecomModalOpen
-                        ? "z-10 border-[#03A94D]"
-                        : "border-[#dfdfdf]"
+                      ? 'z-10 border-[#ff3f3f]'
+                      : focusedField === 'telecom' || isTelecomModalOpen
+                        ? 'z-10 border-[#03A94D]'
+                        : 'border-[#dfdfdf]'
                   }`}
                 >
                   {/* 통신사 아이콘 */}
@@ -1199,12 +1198,12 @@ export default function SignUpPage() {
                     style={{
                       backgroundImage:
                         'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                      backgroundSize: "380px 340px",
+                      backgroundSize: '380px 340px',
                       backgroundPosition: errors.telecom
-                        ? "-32px -310px"
+                        ? '-32px -310px'
                         : formData.telecom
-                          ? "-318px -256px"
-                          : "-32px -310px",
+                          ? '-318px -256px'
+                          : '-32px -310px',
                     }}
                   />
 
@@ -1212,32 +1211,32 @@ export default function SignUpPage() {
                     className="flex flex-1 cursor-pointer items-center justify-between"
                     onClick={() => {
                       setIsTelecomModalOpen(!isTelecomModalOpen);
-                      setFocusedField("telecom");
+                      setFocusedField('telecom');
                     }}
                   >
                     {/* 텍스트 */}
                     <div
                       className={`text-[16px] leading-[22px] tracking-[-.8px] ${
                         formData.telecom
-                          ? "text-[#222]"
+                          ? 'text-[#222]'
                           : errors.telecom
-                            ? "text-[#ff3f3f]"
-                            : "text-[#8e8e8e]"
+                            ? 'text-[#ff3f3f]'
+                            : 'text-[#8e8e8e]'
                       }`}
                     >
-                      {formData.telecom === ""
-                        ? "통신사 선택"
-                        : formData.telecom === "SKT"
-                          ? "SKT"
-                          : formData.telecom === "KT"
-                            ? "KT"
-                            : formData.telecom === "LG"
-                              ? "LG U+"
-                              : formData.telecom === "SKT_MVNO"
-                                ? "SKT 알뜰폰"
-                                : formData.telecom === "KT_MVNO"
-                                  ? "KT 알뜰폰"
-                                  : "LG U+ 알뜰폰"}
+                      {formData.telecom === ''
+                        ? '통신사 선택'
+                        : formData.telecom === 'SKT'
+                          ? 'SKT'
+                          : formData.telecom === 'KT'
+                            ? 'KT'
+                            : formData.telecom === 'LG'
+                              ? 'LG U+'
+                              : formData.telecom === 'SKT_MVNO'
+                                ? 'SKT 알뜰폰'
+                                : formData.telecom === 'KT_MVNO'
+                                  ? 'KT 알뜰폰'
+                                  : 'LG U+ 알뜰폰'}
                     </div>
 
                     {/* 모달 오픈 시 화살표 아이콘 rotate */}
@@ -1246,11 +1245,11 @@ export default function SignUpPage() {
                       style={{
                         backgroundImage:
                           'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                        backgroundSize: "380px 340px",
-                        backgroundPosition: "-96px -258px",
+                        backgroundSize: '380px 340px',
+                        backgroundPosition: '-96px -258px',
                         transform: isTelecomModalOpen
-                          ? "rotate(180deg)"
-                          : "roteta(0deg)",
+                          ? 'rotate(180deg)'
+                          : 'roteta(0deg)',
                       }}
                     />
                   </div>
@@ -1263,9 +1262,9 @@ export default function SignUpPage() {
                       className="fixed inset-0 z-20"
                       onClick={() => {
                         setIsTelecomModalOpen(false);
-                        setFocusedField("");
+                        setFocusedField('');
                         handleBlur({
-                          target: { name: "telecom", value: formData.telecom },
+                          target: { name: 'telecom', value: formData.telecom },
                         });
                       }}
                     />
@@ -1275,12 +1274,12 @@ export default function SignUpPage() {
                         className="grid grid-cols-2 gap-[1px] bg-[#f2f2f2] pb-[1px]"
                       >
                         {[
-                          { id: "SKT", label: "SKT" },
-                          { id: "SKT_MVNO", label: "SKT 알뜰폰" },
-                          { id: "KT", label: "KT" },
-                          { id: "KT_MVNO", label: "KT 알뜰폰" },
-                          { id: "LG", label: "LG U+" },
-                          { id: "LG_MVNO", label: "LG U+ 알뜰폰" },
+                          { id: 'SKT', label: 'SKT' },
+                          { id: 'SKT_MVNO', label: 'SKT 알뜰폰' },
+                          { id: 'KT', label: 'KT' },
+                          { id: 'KT_MVNO', label: 'KT 알뜰폰' },
+                          { id: 'LG', label: 'LG U+' },
+                          { id: 'LG_MVNO', label: 'LG U+ 알뜰폰' },
                         ].map((item) => (
                           <li
                             key={item.id}
@@ -1310,12 +1309,12 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      setFormData((prev) => ({ ...prev, gender: "M" }))
+                      setFormData((prev) => ({ ...prev, gender: 'M' }))
                     }
                     className={`relative flex-1 rounded-l-[4px] border py-[6px] font-medium ${
-                      formData.gender === "M"
-                        ? "z-10 border-[#03A94D] text-[#03A94D]"
-                        : "border-[#c6c6c6] text-[#929294]"
+                      formData.gender === 'M'
+                        ? 'z-10 border-[#03A94D] text-[#03A94D]'
+                        : 'border-[#c6c6c6] text-[#929294]'
                     }`}
                   >
                     남자
@@ -1323,12 +1322,12 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      setFormData((prev) => ({ ...prev, gender: "F" }))
+                      setFormData((prev) => ({ ...prev, gender: 'F' }))
                     }
                     className={`relative -ml-[1px] flex-1 rounded-r-[4px] border py-[6px] font-medium ${
-                      formData.gender === "F"
-                        ? "z-10 border-[#03A94D] text-[#03A94D]"
-                        : "border-[#c6c6c6] text-[#929294]"
+                      formData.gender === 'F'
+                        ? 'z-10 border-[#03A94D] text-[#03A94D]'
+                        : 'border-[#c6c6c6] text-[#929294]'
                     }`}
                   >
                     여자
@@ -1340,12 +1339,12 @@ export default function SignUpPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      setFormData((prev) => ({ ...prev, nationality: "LOCAL" }))
+                      setFormData((prev) => ({ ...prev, nationality: 'LOCAL' }))
                     }
                     className={`relative flex-1 rounded-l-[4px] border py-[6px] font-medium ${
-                      formData.nationality === "LOCAL"
-                        ? "z-10 border-[#03A94D] text-[#03A94D]"
-                        : "border-[#dfdfdf] text-[#929294]"
+                      formData.nationality === 'LOCAL'
+                        ? 'z-10 border-[#03A94D] text-[#03A94D]'
+                        : 'border-[#dfdfdf] text-[#929294]'
                     }`}
                   >
                     내국인
@@ -1355,13 +1354,13 @@ export default function SignUpPage() {
                     onClick={() =>
                       setFormData((prev) => ({
                         ...prev,
-                        nationality: "FOREIGN",
+                        nationality: 'FOREIGN',
                       }))
                     }
                     className={`relative -ml-[1px] flex-1 rounded-r-[4px] border py-[6px] font-medium ${
-                      formData.nationality === "FOREIGN"
-                        ? "z-10 border-[#03A94D] text-[#03A94D]"
-                        : "border-[#dfdfdf] text-[#929294]"
+                      formData.nationality === 'FOREIGN'
+                        ? 'z-10 border-[#03A94D] text-[#03A94D]'
+                        : 'border-[#dfdfdf] text-[#929294]'
                     }`}
                   >
                     외국인
@@ -1398,12 +1397,12 @@ export default function SignUpPage() {
             <div
               className={`relative flex h-auto w-full items-center justify-between gap-[6px] rounded-[6px] border py-[9px] pr-[13px] pl-[8px] ${
                 errors.phone
-                  ? "z-10 border-[#ff3f3f]"
-                  : focusedField === "phone" &&
+                  ? 'z-10 border-[#ff3f3f]'
+                  : focusedField === 'phone' &&
                       formData.phone.length > 0 &&
                       !errors.phone
-                    ? "z-10 border-[#03A94D]"
-                    : "border-[#dfdfdf]"
+                    ? 'z-10 border-[#03A94D]'
+                    : 'border-[#dfdfdf]'
               }`}
             >
               <div
@@ -1411,8 +1410,8 @@ export default function SignUpPage() {
                 style={{
                   backgroundImage:
                     'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                  backgroundSize: "380px 340px",
-                  backgroundPosition: "-192px -310px",
+                  backgroundSize: '380px 340px',
+                  backgroundPosition: '-192px -310px',
                 }}
               />
               <input
@@ -1421,14 +1420,14 @@ export default function SignUpPage() {
                 value={formData.phone}
                 onChange={handleChange}
                 onFocus={(e) => {
-                  setFocusedField("phone");
+                  setFocusedField('phone');
                   setFormData((prev) => ({
                     ...prev,
-                    phone: prev.phone.replace(/-/g, ""),
+                    phone: prev.phone.replace(/-/g, ''),
                   }));
                 }}
                 onBlur={(e) => {
-                  setFocusedField("");
+                  setFocusedField('');
                   handleBlur(e);
                 }}
                 placeholder="휴대전화번호"
@@ -1457,10 +1456,10 @@ export default function SignUpPage() {
                     style={{
                       backgroundImage:
                         'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                      backgroundSize: "380px 340px",
+                      backgroundSize: '380px 340px',
                       backgroundPosition: isAllAuthAgreed
-                        ? "-350px -200px"
-                        : "-350px -176px",
+                        ? '-350px -200px'
+                        : '-350px -176px',
                     }}
                   />
                   <span className="text-[#03A94D]">[필수]</span>
@@ -1478,11 +1477,11 @@ export default function SignUpPage() {
                     style={{
                       backgroundImage:
                         'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                      backgroundSize: "380px 340px",
-                      backgroundPosition: "-96px -258px",
+                      backgroundSize: '380px 340px',
+                      backgroundPosition: '-96px -258px',
                       transform: isAuthTermsOpen
-                        ? "rotate(180deg)"
-                        : "rotate(0deg)",
+                        ? 'rotate(180deg)'
+                        : 'rotate(0deg)',
                     }}
                   />
                 </div>
@@ -1494,17 +1493,17 @@ export default function SignUpPage() {
                   <div className="flex w-full items-center justify-between">
                     <div
                       className="flex w-1/2 cursor-pointer items-center"
-                      onClick={() => handleAuthSingleCheck("privacy")}
+                      onClick={() => handleAuthSingleCheck('privacy')}
                     >
                       <div
                         className="mr-[8px] h-[16px] w-[16px] shrink-0 bg-no-repeat"
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                          backgroundSize: "380px 340px",
+                          backgroundSize: '380px 340px',
                           backgroundPosition: authAgreements.privacy
-                            ? "-186px -258px"
-                            : "-132px -258px",
+                            ? '-186px -258px'
+                            : '-132px -258px',
                         }}
                       />
                       <span>개인정보 이용</span>
@@ -1519,25 +1518,25 @@ export default function SignUpPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                            backgroundSize: "380px 340px",
-                            backgroundPosition: "-282px -232px",
+                            backgroundSize: '380px 340px',
+                            backgroundPosition: '-282px -232px',
                           }}
                         />
                       </a>
                     </div>
                     <div
                       className="flex w-1/2 cursor-pointer items-center"
-                      onClick={() => handleAuthSingleCheck("uniqueId")}
+                      onClick={() => handleAuthSingleCheck('uniqueId')}
                     >
                       <div
                         className="mr-[8px] h-[16px] w-[16px] shrink-0 bg-no-repeat"
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                          backgroundSize: "380px 340px",
+                          backgroundSize: '380px 340px',
                           backgroundPosition: authAgreements.uniqueId
-                            ? "-186px -258px"
-                            : "-132px -258px",
+                            ? '-186px -258px'
+                            : '-132px -258px',
                         }}
                       />
                       <span>고유식별정보 처리</span>
@@ -1552,8 +1551,8 @@ export default function SignUpPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                            backgroundSize: "380px 340px",
-                            backgroundPosition: "-282px -232px",
+                            backgroundSize: '380px 340px',
+                            backgroundPosition: '-282px -232px',
                           }}
                         />
                       </a>
@@ -1562,17 +1561,17 @@ export default function SignUpPage() {
                   <div className="mt-[4px] flex w-full items-center justify-between">
                     <div
                       className="flex w-1/2 cursor-pointer items-center"
-                      onClick={() => handleAuthSingleCheck("telecom")}
+                      onClick={() => handleAuthSingleCheck('telecom')}
                     >
                       <div
                         className="mr-[8px] h-[16px] w-[16px] shrink-0 bg-no-repeat"
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                          backgroundSize: "380px 340px",
+                          backgroundSize: '380px 340px',
                           backgroundPosition: authAgreements.telecom
-                            ? "-186px -258px"
-                            : "-132px -258px",
+                            ? '-186px -258px'
+                            : '-132px -258px',
                         }}
                       />
                       <span>통신사 이용약관</span>
@@ -1587,25 +1586,25 @@ export default function SignUpPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                            backgroundSize: "380px 340px",
-                            backgroundPosition: "-282px -232px",
+                            backgroundSize: '380px 340px',
+                            backgroundPosition: '-282px -232px',
                           }}
                         />
                       </a>
                     </div>
                     <div
                       className="flex w-1/2 cursor-pointer items-center"
-                      onClick={() => handleAuthSingleCheck("authAgency")}
+                      onClick={() => handleAuthSingleCheck('authAgency')}
                     >
                       <div
                         className="mr-[8px] h-[16px] w-[16px] shrink-0 bg-no-repeat"
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                          backgroundSize: "380px 340px",
+                          backgroundSize: '380px 340px',
                           backgroundPosition: authAgreements.authAgency
-                            ? "-186px -258px"
-                            : "-132px -258px",
+                            ? '-186px -258px'
+                            : '-132px -258px',
                         }}
                       />
                       <span>인증사 이용약관</span>
@@ -1620,8 +1619,8 @@ export default function SignUpPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                            backgroundSize: "380px 340px",
-                            backgroundPosition: "-282px -232px",
+                            backgroundSize: '380px 340px',
+                            backgroundPosition: '-282px -232px',
                           }}
                         />
                       </a>
@@ -1630,17 +1629,17 @@ export default function SignUpPage() {
                   <div className="mt-[4px] flex w-full items-center justify-between">
                     <div
                       className="flex w-1/2 cursor-pointer items-center"
-                      onClick={() => handleAuthSingleCheck("naverPrivacy")}
+                      onClick={() => handleAuthSingleCheck('naverPrivacy')}
                     >
                       <div
                         className="mr-[8px] h-[16px] w-[16px] shrink-0 bg-no-repeat"
                         style={{
                           backgroundImage:
                             'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                          backgroundSize: "380px 340px",
+                          backgroundSize: '380px 340px',
                           backgroundPosition: authAgreements.naverPrivacy
-                            ? "-186px -258px"
-                            : "-132px -258px",
+                            ? '-186px -258px'
+                            : '-132px -258px',
                         }}
                       />
                       <span>네이버 개인정보수집</span>
@@ -1655,8 +1654,8 @@ export default function SignUpPage() {
                           style={{
                             backgroundImage:
                               'url("https://ssl.pstatic.net/static/nid/join/sprite/m_sp_06_realname_880025f9.png")',
-                            backgroundSize: "380px 340px",
-                            backgroundPosition: "-282px -232px",
+                            backgroundSize: '380px 340px',
+                            backgroundPosition: '-282px -232px',
                           }}
                         />
                       </a>

@@ -3,11 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import type { SyntheticEvent } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/feature/auth/AuthContext';
 import api from '@/lib/axios';
 import axios from 'axios';
-import { log } from 'console';
 import Link from 'next/link';
 
 const TABS = [
@@ -41,6 +40,8 @@ const formatTime = (seconds: number) => {
 // 컴포넌트
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || '/';
 
   const { login } = useAuth();
 
@@ -161,7 +162,7 @@ export default function SignInPage() {
     try {
       await api.post('/api/auth/login', { loginId, pwd });
       login();
-      router.push('/');
+      router.push(returnUrl);
     } catch {
       alert('로그인에 실패했습니다.');
     }
